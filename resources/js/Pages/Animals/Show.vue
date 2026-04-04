@@ -5,7 +5,8 @@ import Card from '@/Components/Card.vue';
 import { ref } from 'vue';
 
 const props = defineProps({
-    animal: Object
+    animal: Object,
+    qrCode: String
 });
 
 const activeTab = ref('weights');
@@ -99,6 +100,18 @@ const submitWeight = () => {
                         <div class="pt-4 border-t border-earth-100">
                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Condition / Notes') }}</p>
                             <p class="text-sm text-gray-700 mt-2 italic">{{ animal.condition_notes || __('No condition notes recorded.') }}</p>
+                        </div>
+                        
+                        <!-- QR Code Section -->
+                        <div class="pt-6 border-t border-earth-100 flex flex-col items-center">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide w-full mb-4">{{ __('Animal QR Code') }}</p>
+                            <div class="bg-white p-3 rounded-2xl border border-earth-100 shadow-sm mb-4">
+                                <img :src="`data:image/svg+xml;base64,${qrCode}`" alt="QR Code" class="h-32 w-32" />
+                            </div>
+                            <a :href="`data:image/svg+xml;base64,${qrCode}`" :download="`qr-${animal.name_or_tag}.svg`" class="text-xs font-bold text-emerald-700 hover:text-emerald-900 transition flex items-center">
+                                <i class="fas fa-download mr-1.5"></i>
+                                {{ __('Download QR Code') }}
+                            </a>
                         </div>
                     </div>
                 </Card>

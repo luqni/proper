@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('locale', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
+    Route::get('animals/scanner', [AnimalController::class, 'scanner'])->name('scanner');
     Route::resource('animals', AnimalController::class);
     Route::resource('tasks', TaskController::class);
     Route::resource('finances', FinancialController::class);

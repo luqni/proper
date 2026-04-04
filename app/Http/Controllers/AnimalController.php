@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Animal;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class AnimalController extends Controller
 {
@@ -64,8 +65,11 @@ class AnimalController extends Controller
     {
         $this->authorize('view', $animal);
 
+        $qrCode = base64_encode(QrCode::format('svg')->size(200)->errorCorrection('H')->generate(route('animals.show', $animal->id)));
+
         return Inertia::render('Animals/Show', [
             'animal' => $animal->load('weights'),
+            'qrCode' => $qrCode,
         ]);
     }
 
@@ -132,5 +136,10 @@ class AnimalController extends Controller
         $animal->update(['weight' => $request->weight]);
 
         return back()->with('success', 'Weight recorded successfully.');
+    }
+
+    public function scanner()
+    {
+        return Inertia::render('Animals/Scanner');
     }
 }

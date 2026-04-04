@@ -10,9 +10,9 @@ import InstallPrompt from '@/Components/InstallPrompt.vue';
 const navItems = [
     { name: 'Dashboard', route: 'dashboard', icon: 'fas fa-house' },
     { name: 'Animals', route: 'animals.index', icon: 'fas fa-cow', pattern: 'animals.*' }, 
+    { name: 'Scanner', route: 'scanner', icon: 'fas fa-qrcode', pattern: 'scanner' },
     { name: 'Finances', route: 'finances.index', icon: 'fas fa-wallet', pattern: 'finances.*' },
     { name: 'Team', route: 'teams.index', icon: 'fas fa-users', pattern: 'teams.*' },
-    { name: 'Profile', route: 'profile.edit', icon: 'fas fa-user-circle', pattern: 'profile.*', mobileOnly: true },
 ];
 
 const props = defineProps({
