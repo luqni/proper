@@ -55,8 +55,8 @@ const switchLanguage = (locale) => {
             </div>
             
             <div class="px-3 py-4 space-y-2 flex-1 overflow-y-auto bg-emerald-900">
-                <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item.route) ? 'bg-emerald-800 text-white shadow-sm' : 'text-emerald-200 hover:bg-emerald-800 hover:text-white', 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-colors']">
-                    <i :class="[item.icon, isActive(item.route) ? 'text-white' : 'text-emerald-400 group-hover:text-white', 'mr-3 text-lg w-6 flex-shrink-0 text-center']"></i>
+                <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'bg-emerald-800 text-white shadow-sm' : 'text-emerald-200 hover:bg-emerald-800 hover:text-white', 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-colors']">
+                    <i :class="[item.icon, isActive(item) ? 'text-white' : 'text-emerald-400 group-hover:text-white', 'mr-3 text-lg w-6 flex-shrink-0 text-center']"></i>
                     {{ __(item.name) }}
                 </Link>
             </div>
@@ -143,9 +143,9 @@ const switchLanguage = (locale) => {
 
         <!-- Mobile Bottom Navigation -->
         <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-emerald-100 shadow-[0_-8px_30px_rgba(6,78,59,0.08)] flex justify-around items-center px-4 py-3 pb-safe w-full rounded-t-[2.5rem]">
-            <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item.route) ? 'text-emerald-700 bg-emerald-50 scale-110 shadow-sm' : 'text-emerald-900/40 hover:text-emerald-900', 'flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 origin-bottom']">
-                <i :class="[item.icon, isActive(item.route) ? 'text-emerald-700' : 'text-emerald-900/30', 'text-xl mb-1 transition-colors']"></i>
-                <span class="text-[9px] font-black tracking-widest uppercase transition-colors" :class="[isActive(item.route) ? 'text-emerald-700' : 'text-emerald-950/40']">{{ __(item.name) }}</span>
+            <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'text-emerald-700 bg-emerald-50 scale-110 shadow-sm' : 'text-emerald-900/40 hover:text-emerald-900', 'flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 origin-bottom']">
+                <i :class="[item.icon, isActive(item) ? 'text-emerald-700' : 'text-emerald-900/30', 'text-xl mb-1 transition-colors']"></i>
+                <span class="text-[9px] font-black tracking-widest uppercase transition-colors" :class="[isActive(item) ? 'text-emerald-700' : 'text-emerald-950/40']">{{ __(item.name) }}</span>
             </Link>
         </div>
 
