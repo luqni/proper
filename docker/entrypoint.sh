@@ -12,7 +12,7 @@ if [ ! -d "/var/www/html/public/storage" ]; then
 fi
 
 # Run migrations (careful in production, usually better to run manually or via CD)
-# php artisan migrate --force
+php artisan migrate --force
 
 # Optimize Laravel
 php artisan config:cache
