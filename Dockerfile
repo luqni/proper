@@ -1,9 +1,15 @@
 # Stage 1: Build Assets
-FROM node:20-alpine as node-build
+FROM node:20-alpine AS node-build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --progress=false --no-audit --no-fund
 COPY . .
+
+# Ensure PWA icons exist during build (fallback to logo if missing)
+RUN mkdir -p public/icons && \
+    cp public/images/logo.png public/icons/icon-192x192.png || true && \
+    cp public/images/logo.png public/icons/icon-512x512.png || true
+
 RUN npm run build
 
 # Stage 2: PHP Application
