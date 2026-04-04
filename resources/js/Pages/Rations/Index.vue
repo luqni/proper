@@ -79,28 +79,30 @@ const deleteRation = (id) => {
             <div class="lg:col-span-2">
                 <Card class="shadow-sm border-earth-200 overflow-hidden">
                     <Table v-if="rations && rations.length > 0">
-                        <template #header>
+                        <template #head>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-farm-50">Ration Name</th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-farm-50">Price / kg</th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider bg-farm-50">Stock (kg)</th>
                             <th scope="col" class="relative px-6 py-4 bg-farm-50"><span class="sr-only">Actions</span></th>
                         </template>
-                        <tr v-for="ration in rations" :key="ration.id" class="hover:bg-earth-50 transition border-t border-earth-100">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-bold text-gray-900">{{ ration.name }}</div>
-                                <div class="text-xs text-gray-500 mt-0.5 truncate max-w-[200px]">{{ ration.notes }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
-                                Rp {{ Number(ration.price_per_kg).toLocaleString() }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                {{ ration.weight_kg }} kg
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <button @click="startEdit(ration)" class="text-farm-600 hover:text-farm-900 font-bold">Edit</button>
-                                <button @click="deleteRation(ration.id)" class="text-red-600 hover:text-red-900 font-bold">Delete</button>
-                            </td>
-                        </tr>
+                        <template #body>
+                            <tr v-for="ration in rations" :key="ration.id" class="hover:bg-earth-50 transition border-t border-earth-100">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-bold text-gray-900">{{ ration.name }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5 truncate max-w-[200px]">{{ ration.notes }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                                    Rp {{ Number(ration.price_per_kg).toLocaleString() }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    {{ ration.weight_kg }} kg
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                    <button @click="startEdit(ration)" class="text-farm-600 hover:text-farm-900 font-bold">Edit</button>
+                                    <button @click="deleteRation(ration.id)" class="text-red-600 hover:text-red-900 font-bold">Delete</button>
+                                </td>
+                            </tr>
+                        </template>
                     </Table>
                     <div v-else class="p-12 text-center text-gray-500 bg-earth-50">
                         No rations recorded yet. Add one to get started!
