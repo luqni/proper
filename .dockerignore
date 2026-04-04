@@ -15,6 +15,4 @@ yarn-error.log
 .phpunit.result.cache
 .vscode
 .idea
-.dockerignore
-Dockerfile
-docker/
+# Removed docker/ and Dockerfile from ignore to allow build context access
