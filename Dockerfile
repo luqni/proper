@@ -62,6 +62,10 @@ COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 # Configure Supervisor
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Create log and pid directories for supervisor
+RUN mkdir -p /var/log/supervisor /var/run/supervisord && \
+    chown -R www-data:www-data /var/log/supervisor /var/run/supervisord
+
 # Configure PHP
 COPY docker/php.ini /usr/local/etc/php/conf.d/app.ini
 

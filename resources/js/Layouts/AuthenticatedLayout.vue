@@ -12,6 +12,7 @@ const navItems = [
     { name: 'Animals', route: 'animals.index', icon: 'fas fa-cow', pattern: 'animals.*' }, 
     { name: 'Finances', route: 'finances.index', icon: 'fas fa-wallet', pattern: 'finances.*' },
     { name: 'Team', route: 'teams.index', icon: 'fas fa-users', pattern: 'teams.*' },
+    { name: 'Profile', route: 'profile.edit', icon: 'fas fa-user-circle', pattern: 'profile.*', mobileOnly: true },
 ];
 
 const props = defineProps({
@@ -55,7 +56,7 @@ const switchLanguage = (locale) => {
             </div>
             
             <div class="px-3 py-4 space-y-2 flex-1 overflow-y-auto bg-emerald-900">
-                <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'bg-emerald-800 text-white shadow-sm' : 'text-emerald-200 hover:bg-emerald-800 hover:text-white', 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-colors']">
+                <Link v-for="item in navItems.filter(i => !i.mobileOnly)" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'bg-emerald-800 text-white shadow-sm' : 'text-emerald-200 hover:bg-emerald-800 hover:text-white', 'group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-colors']">
                     <i :class="[item.icon, isActive(item) ? 'text-white' : 'text-emerald-400 group-hover:text-white', 'mr-3 text-lg w-6 flex-shrink-0 text-center']"></i>
                     {{ __(item.name) }}
                 </Link>
@@ -77,56 +78,68 @@ const switchLanguage = (locale) => {
         <div class="flex-1 flex flex-col min-w-0 bg-emerald-50/30">
             <!-- Top Header -->
             <header v-if="!hideHeader" class="bg-white/80 backdrop-blur-md shadow-sm border-b border-emerald-100 shrink-0 sticky top-0 z-30">
-                <div class="flex items-center justify-between min-h-[4rem] py-2 px-4 md:px-8">
+                <div class="flex items-center justify-between min-h-[4.5rem] py-2 px-4 md:px-8 max-w-7xl mx-auto w-full">
                     <div class="flex items-center min-w-0 flex-1 mr-4">
-                        <!-- Mobile Logo (visible only on mobile) -->
-                        <div class="md:hidden mr-3">
-                            <Link :href="route('dashboard')" class="h-9 w-9 p-1 bg-white rounded-lg shadow-sm border border-emerald-100 flex items-center justify-center">
-                                <ApplicationLogo />
-                            </Link>
+                        <!-- Mobile Logo/Title Section (Similar to Screenshot) -->
+                        <div class="flex items-center bg-emerald-50 rounded-2xl border border-emerald-100 p-1.5 pl-3 pr-2 shadow-sm w-full sm:max-w-xs group cursor-pointer hover:bg-white transition-all md:hidden">
+                            <i class="fas fa-location-dot text-emerald-600 mr-2.5 text-sm"></i>
+                            <span class="text-xs font-black text-emerald-950 truncate flex-1 uppercase tracking-wider">Pintar Ternak</span>
+                            <i class="fas fa-chevron-down text-emerald-300 ml-2 text-[10px]"></i>
                         </div>
-                        <h1 class="text-xl font-black text-emerald-950 tracking-tight w-full truncate"><slot name="header"></slot></h1>
+
+                        <!-- Desktop Header Title -->
+                        <h1 class="hidden md:block text-xl font-black text-emerald-950 tracking-tight w-full truncate"><slot name="header"></slot></h1>
                     </div>
-                    <div class="flex items-center space-x-4">
+
+                    <div class="flex items-center space-x-3">
                         <!-- Language Switcher -->
-                        <div class="flex items-center bg-earth-100 rounded-lg p-1 border border-earth-200">
+                        <div class="hidden sm:flex items-center bg-emerald-50 rounded-xl p-1 border border-emerald-100/50">
                             <button @click="switchLanguage('id')" 
-                                :class="[$page.props.locale === 'id' ? 'bg-white text-farm-700 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
-                                class="px-2 py-1 text-[10px] font-black rounded-md transition-all uppercase leading-none">
+                                :class="[$page.props.locale === 'id' ? 'bg-white text-emerald-700 shadow-sm' : 'text-emerald-900/30 hover:text-emerald-700']"
+                                class="px-2.5 py-1.5 text-[10px] font-black rounded-lg transition-all uppercase leading-none">
                                 ID
                             </button>
                             <button @click="switchLanguage('en')" 
-                                :class="[$page.props.locale === 'en' ? 'bg-white text-farm-700 shadow-sm' : 'text-gray-500 hover:text-gray-700']"
-                                class="px-2 py-1 text-[10px] font-black rounded-md transition-all uppercase leading-none">
+                                :class="[$page.props.locale === 'en' ? 'bg-white text-emerald-700 shadow-sm' : 'text-emerald-900/30 hover:text-emerald-700']"
+                                class="px-2.5 py-1.5 text-[10px] font-black rounded-lg transition-all uppercase leading-none">
                                 EN
                             </button>
                         </div>
                         
                         <OfflineIndicator />
+
+                        <!-- Profile Avatar/Dropdown -->
                         <Dropdown align="right" width="48">
                             <template #trigger>
-                                <button class="flex items-center text-sm font-medium text-emerald-900/60 hover:text-emerald-900 focus:outline-none transition py-1 px-1.5 rounded-xl hover:bg-emerald-50 border border-transparent hover:border-emerald-100">
-                                    <div class="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 border border-emerald-200 font-bold overflow-hidden shadow-sm">
+                                <button class="flex items-center group focus:outline-none transition-transform hover:scale-105">
+                                    <div class="h-10 w-10 md:h-9 md:w-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 border-2 border-white shadow-md font-bold overflow-hidden">
                                         {{ $page.props.auth.user.name.charAt(0) }}
                                     </div>
-                                    <div class="ml-2 hidden sm:block font-bold">{{ $page.props.auth.user.name }}</div>
-                                    <i class="fas fa-chevron-down ml-1.5 text-[10px] text-emerald-300"></i>
+                                    <div class="ml-2.5 hidden md:block text-left">
+                                        <p class="text-[10px] font-black text-emerald-800/40 uppercase tracking-widest leading-none mb-1">{{ __('Account') }}</p>
+                                        <div class="flex items-center text-sm font-black text-emerald-950">
+                                            {{ $page.props.auth.user.name }}
+                                            <i class="fas fa-chevron-down ml-2 text-[8px] text-emerald-300"></i>
+                                        </div>
+                                    </div>
                                 </button>
                             </template>
                             <template #content>
-                                <div class="p-1 px-2 mb-1 bg-emerald-50 rounded-lg mx-1 mt-1">
-                                    <p class="text-[10px] font-black text-emerald-800 uppercase tracking-widest">{{ __('Active Account') }}</p>
-                                    <p class="text-xs font-bold text-emerald-600 truncate">{{ $page.props.auth.user.email }}</p>
+                                <div class="px-4 py-3 bg-emerald-50/50 border-b border-emerald-50">
+                                    <p class="text-[10px] font-black text-emerald-800/40 uppercase tracking-widest mb-0.5">{{ __('Signed in as') }}</p>
+                                    <p class="text-xs font-bold text-emerald-900 truncate">{{ $page.props.auth.user.email }}</p>
                                 </div>
-                                <DropdownLink :href="route('profile.edit')">
-                                    <i class="fas fa-user-circle mr-2 text-emerald-500"></i>
-                                    {{ __('Profile') }}
-                                </DropdownLink>
-                                <div class="border-t border-emerald-50 my-1"></div>
-                                <DropdownLink :href="route('logout')" method="post" as="button" class="text-rose-600">
-                                    <i class="fas fa-sign-out-alt mr-2 text-rose-500"></i>
-                                    {{ __('Log Out') }}
-                                </DropdownLink>
+                                <div class="p-1">
+                                    <DropdownLink :href="route('profile.edit')" class="rounded-lg">
+                                        <i class="fas fa-user-circle mr-2.5 text-emerald-500"></i>
+                                        {{ __('Profile Settings') }}
+                                    </DropdownLink>
+                                    <div class="border-t border-emerald-50 my-1"></div>
+                                    <DropdownLink :href="route('logout')" method="post" as="button" class="rounded-lg text-rose-600 hover:bg-rose-50">
+                                        <i class="fas fa-sign-out-alt mr-2.5 text-rose-500"></i>
+                                        {{ __('Log Out') }}
+                                    </DropdownLink>
+                                </div>
                             </template>
                         </Dropdown>
                     </div>
@@ -144,7 +157,14 @@ const switchLanguage = (locale) => {
         <!-- Mobile Bottom Navigation -->
         <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-emerald-100 shadow-[0_-8px_30px_rgba(6,78,59,0.08)] flex justify-around items-center px-4 py-3 pb-safe w-full rounded-t-[2.5rem]">
             <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'text-emerald-700 bg-emerald-50 scale-110 shadow-sm' : 'text-emerald-900/40 hover:text-emerald-900', 'flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 origin-bottom']">
-                <i :class="[item.icon, isActive(item) ? 'text-emerald-700' : 'text-emerald-900/30', 'text-xl mb-1 transition-colors']"></i>
+                <template v-if="item.name === 'Profile'">
+                    <div class="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-[10px] font-black text-emerald-700 border border-emerald-200 mb-1 transition-all" :class="[isActive(item) ? 'scale-110 border-emerald-400 shadow-sm bg-white' : '']">
+                        {{ $page.props.auth.user.name.charAt(0) }}
+                    </div>
+                </template>
+                <template v-else>
+                    <i :class="[item.icon, isActive(item) ? 'text-emerald-700' : 'text-emerald-900/30', 'text-xl mb-1 transition-colors']"></i>
+                </template>
                 <span class="text-[9px] font-black tracking-widest uppercase transition-colors" :class="[isActive(item) ? 'text-emerald-700' : 'text-emerald-950/40']">{{ __(item.name) }}</span>
             </Link>
         </div>
