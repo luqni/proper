@@ -20,7 +20,6 @@ WORKDIR /var/www/html
 
 # Install system dependencies
 RUN apk add --no-cache \
-    nginx \
     supervisor \
     libpng-dev \
     libjpeg-turbo-dev \
@@ -56,9 +55,6 @@ COPY --from=node-build /app/public/build ./public/build
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Configure Nginx
-COPY docker/nginx.conf /etc/nginx/http.d/default.conf
-
 # Configure Supervisor
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -73,8 +69,8 @@ COPY docker/php.ini /usr/local/etc/php/conf.d/app.ini
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
-EXPOSE 80
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
 
 # Entrypoint script
 ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]
