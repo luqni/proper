@@ -54,6 +54,10 @@ COPY --from=build /app/public/build/workbox-*.js /var/www/public/
 # Laravel permissions
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage
 
+# Configure Nginx (Debian paths)
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
 # Supervisor config (Using paths from user's sample)
 COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
 # Note: User mentioned docker/laravel.conf, using it if it exists or fallback to supervisord.conf
