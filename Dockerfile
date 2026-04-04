@@ -1,9 +1,14 @@
-# Stage 1: Build Assets
-FROM node:20-alpine AS node-build
+# Stage 1: Build Frontend Assets
+FROM node:20-alpine AS build
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --progress=false --no-audit --no-fund
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
+
+# Add build argument for VAPID key (if needed)
+ARG VITE_VAPID_PUBLIC_KEY
+ENV VITE_VAPID_PUBLIC_KEY=$VITE_VAPID_PUBLIC_KEY
 
 # Ensure PWA icons exist during build (fallback to logo if missing)
 RUN mkdir -p public/icons && \
@@ -12,65 +17,52 @@ RUN mkdir -p public/icons && \
 
 RUN npm run build
 
-# Stage 2: PHP Application
-FROM php:8.3-fpm-alpine
+# Stage 2: Build PHP App
+FROM php:8.3-fpm
+
+# Install dependencies (GD, zip, zlib, PostgreSQL, cron)
+RUN apt-get update && apt-get install -y \
+    nginx git unzip curl libzip-dev zip zlib1g-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    libpq-dev supervisor cron libicu-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install zip pdo_mysql pdo_pgsql gd pcntl bcmath intl
+
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+# Copy Composer from the official image
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Install system dependencies
-RUN apk add --no-cache \
-    supervisor \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev \
-    freetype-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    icu-dev \
-    oniguruma-dev \
-    postgresql-dev
-
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) \
-        gd \
-        pdo_mysql \
-        pdo_pgsql \
-        zip \
-        intl \
-        bcmath \
-        opcache
-
-# Copy Composer from official image
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy application files
+# Copy project files
 COPY . .
 
-# Copy built assets from Stage 1
-COPY --from=node-build /app/public/build ./public/build
+# Ensure important folders exist
+RUN mkdir -p storage bootstrap/cache
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Configure Supervisor
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Copy frontend assets from Stage 1
+COPY --from=build /app/public/build /var/www/public/build
+COPY --from=build /app/public/sw.js /var/www/public/
+COPY --from=build /app/public/workbox-*.js /var/www/public/
 
-# Create log and pid directories for supervisor
-RUN mkdir -p /var/log/supervisor /var/run/supervisord && \
-    chown -R www-data:www-data /var/log/supervisor /var/run/supervisord
+# Laravel permissions
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage
 
-# Configure PHP
-COPY docker/php.ini /usr/local/etc/php/conf.d/app.ini
+# Supervisor config (Using paths from user's sample)
+COPY docker/supervisord.conf /etc/supervisor/supervisord.conf
+# Note: User mentioned docker/laravel.conf, using it if it exists or fallback to supervisord.conf
+# For now, we will create a basic laravel.conf if user doesn't have it.
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Entrypoint
+COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Expose port 9000 for PHP-FPM
-EXPOSE 9000
+EXPOSE 80
 
-# Entrypoint script
-ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint.sh"]

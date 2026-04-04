@@ -7,7 +7,7 @@ set -e
 # sleep 5
 
 # Create storage link if not exists
-if [ ! -d "/var/www/html/public/storage" ]; then
+if [ ! -d "/var/www/public/storage" ]; then
     php artisan storage:link
 fi
 
@@ -20,4 +20,4 @@ php artisan route:cache
 php artisan view:cache
 
 # Start supervisor
-exec supervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec supervisord -c /etc/supervisor/supervisord.conf
