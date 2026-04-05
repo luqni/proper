@@ -52,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('farms/{farm}/cover', [FarmController::class, 'updateCover'])->name('farms.updateCover');
     Route::resource('teams', TeamController::class)->only(['index', 'store', 'destroy']);
     Route::post('animals/{animal}/weights', [AnimalController::class, 'storeWeight'])->name('animals.weights.store');
+    Route::post('animals/{animal}/productions', [AnimalController::class, 'storeProduction'])->name('animals.productions.store');
+    Route::get('animals/check-inbreeding', [AnimalController::class, 'checkInbreeding'])->name('animals.check-inbreeding');
 });
 
 require __DIR__.'/auth.php';

@@ -1,8 +1,8 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import Card from '@/Components/Card.vue';
-import { ref } from 'vue';
 
 const props = defineProps({
     animal: Object,
@@ -11,12 +11,24 @@ const props = defineProps({
 
 const activeTab = ref('weights');
 
-const tabs = [
+const tabs = ref([
     { id: 'weights', name: __('Weight Tracking') },
     { id: 'health', name: __('Health Records') },
-    { id: 'breeding', name: __('Breeding History') },
-    { id: 'production', name: __('Production Logs') },
-];
+]);
+
+onMounted(() => {
+    if (props.animal.purpose === 'breeding') {
+        tabs.value.push({ id: 'pedigree', name: __('Pedigree (Silsilah)') });
+    } else if (props.animal.purpose === 'fattening') {
+        tabs.value.push({ id: 'fattening', name: __('Fattening (ADG)') });
+    } else if (props.animal.purpose === 'milking') {
+        tabs.value.push({ id: 'milking', name: __('Milking Records') });
+    }
+    
+    // Add these anyway but maybe lower priority?
+    tabs.value.push({ id: 'breeding', name: __('Breeding History') });
+    tabs.value.push({ id: 'production', name: __('Production Logs') });
+});
 
 const weightForm = useForm({
     weight: '',
@@ -31,6 +43,19 @@ const submitWeight = () => {
     // I'll assume we can post to a weight recording route.
     weightForm.post(route('animals.weights.store', props.animal.id), {
         onSuccess: () => weightForm.reset(),
+    });
+};
+
+const productionForm = useForm({
+    type: 'milk',
+    quantity: '',
+    unit: 'Liters',
+    date: new Date().toISOString().split('T')[0],
+});
+
+const submitProduction = () => {
+    productionForm.post(route('animals.productions.store', props.animal.id), {
+        onSuccess: () => productionForm.reset('quantity'),
     });
 };
 </script>
@@ -60,7 +85,13 @@ const submitWeight = () => {
                     <div class="p-6 flex flex-col items-center border-b border-earth-100 bg-earth-50 rounded-t-lg">
                         <img :src="animal.photo_path || `https://ui-avatars.com/api/?name=${animal.name_or_tag}&background=random`" alt="Photo" class="h-24 w-24 rounded-full border-4 border-white shadow-md mb-4" />
                         <h2 class="text-xl font-bold text-gray-900">{{ animal.name_or_tag }}</h2>
-                        <span class="mt-2 bg-farm-100 text-farm-800 text-xs px-3 py-1 rounded-full font-bold border border-farm-200 shadow-sm capitalize">{{ animal.status }}</span>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="bg-farm-100 text-farm-800 text-xs px-3 py-1 rounded-full font-bold border border-farm-200 shadow-sm capitalize">{{ animal.status }}</span>
+                            <span v-if="animal.inbreeding_risk" class="bg-red-100 text-red-800 text-[10px] px-2 py-1 rounded-full font-black border border-red-200 shadow-sm uppercase animate-pulse">
+                                <i class="fas fa-triangle-exclamation mr-1"></i>
+                                {{ __('Inbred') }}
+                            </span>
+                        </div>
                     </div>
                     <div class="p-6 space-y-5">
                         <div class="pb-4 border-b border-earth-100">
@@ -74,7 +105,7 @@ const submitWeight = () => {
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Breed') }}</p>
-                                <p class="text-sm font-semibold text-gray-900 mt-1">{{ animal.breed || '-' }}</p>
+                                <p class="text-sm font-semibold text-gray-900 mt-1">{{ animal.breed || __('Not Recorded') }}</p>
                             </div>
                             <div>
                                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Current Weight') }}</p>
@@ -96,6 +127,10 @@ const submitWeight = () => {
                                     {{ animal.entry_date ? new Date(animal.entry_date).toLocaleDateString('id-ID') : '-' }}
                                 </p>
                             </div>
+                        </div>
+                        <div class="pt-4 border-t border-earth-100">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Purpose') }}</p>
+                            <p class="text-sm font-semibold text-gray-900 mt-1 capitalize">{{ animal.purpose }}</p>
                         </div>
                         <div class="pt-4 border-t border-earth-100">
                             <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Condition / Notes') }}</p>
@@ -178,6 +213,137 @@ const submitWeight = () => {
                             </div>
                             <div v-else class="flex flex-col items-center justify-center text-sm font-medium text-gray-500 bg-earth-50 py-12 px-6 rounded-xl border border-dashed border-earth-300">
                                 {{ __('No weight records found.') }}
+                            </div>
+                        </div>
+
+                        <div v-if="activeTab === 'pedigree'">
+                            <h3 class="text-lg font-bold text-gray-900 mb-6">{{ __('Animal Pedigree (Silsilah)') }}</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-widest">{{ __('Parents') }}</h4>
+                                    <div class="p-4 bg-earth-50 rounded-2xl border border-earth-200">
+                                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-earth-100">
+                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Sire (Bapak)') }}</span>
+                                            <Link v-if="animal.sire" :href="route('animals.show', animal.sire.id)" class="text-sm font-bold text-emerald-700 hover:underline">
+                                                {{ animal.sire.name_or_tag }}
+                                            </Link>
+                                            <span v-else class="text-sm text-gray-400 italic">{{ __('Not Recorded') }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Dam (Induk)') }}</span>
+                                            <Link v-if="animal.dam" :href="route('animals.show', animal.dam.id)" class="text-sm font-bold text-emerald-700 hover:underline">
+                                                {{ animal.dam.name_or_tag }}
+                                            </Link>
+                                            <span v-else class="text-sm text-gray-400 italic">{{ __('Not Recorded') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-widest">{{ __('Offspring (Anak)') }}</h4>
+                                    <div v-if="animal.offspring && animal.offspring.length > 0" class="space-y-2">
+                                        <div v-for="child in animal.offspring" :key="child.id" class="p-3 bg-white border border-earth-100 rounded-xl flex items-center justify-between shadow-sm">
+                                            <Link :href="route('animals.show', child.id)" class="text-sm font-bold text-gray-900 hover:text-emerald-700">
+                                                {{ child.name_or_tag }}
+                                            </Link>
+                                            <span class="text-xs text-gray-500 bg-earth-50 px-2 py-0.5 rounded-full">{{ child.species }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="p-8 bg-earth-50 rounded-2xl border border-dashed border-earth-200 flex flex-col items-center justify-center text-gray-400">
+                                        <i class="fas fa-baby text-2xl mb-2"></i>
+                                        <p class="text-xs">{{ __('No offspring recorded.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="activeTab === 'fattening'">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-bold text-gray-900">{{ __('Fattening Progress') }}</h3>
+                                <div class="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-xl border border-emerald-200">
+                                    <p class="text-[10px] font-black uppercase tracking-widest">{{ __('Daily Gain (ADG)') }}</p>
+                                    <p class="text-xl font-black">{{ animal.average_daily_gain }} <span class="text-xs font-bold">kg/day</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="p-8 bg-earth-50 rounded-2xl border border-earth-200 mb-6">
+                                <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">{{ __('Growth Summary') }}</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div class="p-3 bg-white rounded-xl shadow-sm border border-earth-100 text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase">{{ __('Initial') }}</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ animal.initial_weight || '-' }} <span class="text-[10px]">kg</span></p>
+                                    </div>
+                                    <div class="p-3 bg-white rounded-xl shadow-sm border border-earth-100 text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase">{{ __('Current') }}</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ animal.weight }} <span class="text-[10px]">kg</span></p>
+                                    </div>
+                                    <div class="p-3 bg-white rounded-xl shadow-sm border border-earth-100 text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase">{{ __('Total Gain') }}</p>
+                                        <p class="text-lg font-bold text-emerald-600">{{ (animal.weight - (animal.initial_weight || 0)).toFixed(2) }} <span class="text-[10px]">kg</span></p>
+                                    </div>
+                                    <div class="p-3 bg-white rounded-xl shadow-sm border border-earth-100 text-center">
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase">{{ __('Days on Feed') }}</p>
+                                        <p class="text-lg font-bold text-gray-900">
+                                            {{ animal.entry_date ? Math.floor((new Date() - new Date(animal.entry_date)) / (1000 * 60 * 60 * 24)) : '-' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-center text-xs text-gray-400 italic">
+                                {{ __('Note: ADG is calculated based on the two most recent weight records.') }}
+                            </p>
+                        </div>
+
+                        <div v-if="activeTab === 'milking'">
+                            <h3 class="text-lg font-bold text-gray-900 mb-6">{{ __('Milk Production History') }}</h3>
+                            
+                            <!-- Add Milking Record Form -->
+                            <form @submit.prevent="submitProduction" class="mb-8 p-4 bg-earth-50 rounded-xl border border-earth-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Quantity') }}</label>
+                                    <input v-model="productionForm.quantity" type="number" step="0.01" required class="w-full border-gray-300 rounded-lg text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Unit') }}</label>
+                                    <select v-model="productionForm.unit" class="w-full border-gray-300 rounded-lg text-sm">
+                                        <option value="Liters">Liters</option>
+                                        <option value="kg">kg</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Date') }}</label>
+                                    <input v-model="productionForm.date" type="date" required class="w-full border-gray-300 rounded-lg text-sm" />
+                                </div>
+                                <button type="submit" :disabled="productionForm.processing" class="h-[38px] bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">
+                                    {{ __('Record Milk') }}
+                                </button>
+                            </form>
+
+                            <div v-if="animal.productions && animal.productions.filter(i => i.type === 'milk').length > 0" class="space-y-4">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-earth-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Date') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Production') }}</th>
+                                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Unit') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-earth-100">
+                                            <tr v-for="p in animal.productions.filter(i => i.type === 'milk')" :key="p.id">
+                                                <td class="px-4 py-3 text-sm text-gray-900">{{ new Date(p.date).toLocaleDateString('id-ID') }}</td>
+                                                <td class="px-4 py-3 text-sm font-bold text-emerald-600 font-mono">{{ p.quantity }}</td>
+                                                <td class="px-4 py-3 text-sm text-gray-500 uppercase">{{ p.unit }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div v-else class="flex flex-col items-center justify-center text-sm font-medium text-gray-500 bg-earth-50 py-12 px-6 rounded-xl border border-dashed border-earth-300">
+                                <i class="fas fa-glass-water text-3xl text-earth-300 mb-3"></i>
+                                {{ __('No milking records found for this animal.') }}
                             </div>
                         </div>
 

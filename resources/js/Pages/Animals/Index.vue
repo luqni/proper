@@ -43,12 +43,7 @@ const getGenderIcon = (sex) => {
 };
 
 const getSpeciesIcon = (species) => {
-    const s = species.toLowerCase();
-    if (s.includes('cow') || s.includes('cattle')) return '🐄';
-    if (s.includes('chicken') || s.includes('poultry')) return '🐔';
-    if (s.includes('goat')) return '🐐';
-    if (s.includes('sheep')) return '🐑';
-    return '🐾';
+    return 'fas fa-cow';
 };
 </script>
 
@@ -96,7 +91,7 @@ const getSpeciesIcon = (species) => {
                 <div v-for="(animals, species) in filteredGrouped" :key="species" class="space-y-4">
                     <div class="flex justify-between items-end px-2">
                         <h2 class="text-xl font-extrabold text-gray-700 flex items-center">
-                            <span class="mr-2 text-2xl">{{ getSpeciesIcon(species) }}</span>
+                            <span class="mr-2 text-xl text-emerald-600"><i :class="getSpeciesIcon(species)"></i></span>
                             {{ species }}
                         </h2>
                         <span class="text-sm font-bold text-gray-400">{{ animals.length }} {{ __('animals') }}</span>
@@ -120,7 +115,9 @@ const getSpeciesIcon = (species) => {
                                     <h3 class="text-lg font-extrabold text-gray-900 leading-tight">{{ animal.name_or_tag }}</h3>
                                 </div>
                                 <div class="space-y-0.5 mt-1">
-                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-tight">{{ species }}: {{ animal.breed || __('Unknown') }}</p>
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-tight">
+                                        {{ species }}<span v-if="animal.breed">: {{ animal.breed }}</span>
+                                    </p>
                                     <p class="text-xs font-bold text-gray-600">{{ __('Age') }}: {{ animal.age_display }}</p>
                                     <div class="flex items-center pt-1">
                                         <div class="bg-gray-100 p-1 rounded-md mr-1.5 flex items-center justify-center h-5 w-5">

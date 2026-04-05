@@ -28,7 +28,12 @@ class AnimalController extends Controller
 
     public function create()
     {
-        return Inertia::render('Animals/Create');
+        $animals = auth()->user()->farm->animals()->orderBy('name_or_tag')->get();
+        $locations = auth()->user()->farm->locations()->orderBy('name')->get();
+        return Inertia::render('Animals/Create', [
+            'animals' => $animals,
+            'locations' => $locations
+        ]);
     }
 
     public function store(Request $request)
@@ -38,12 +43,16 @@ class AnimalController extends Controller
             'name_or_tag' => 'required|string|max:255',
             'species' => 'required|string|max:255',
             'breed' => 'nullable|string|max:255',
+            'purpose' => 'required|in:breeding,fattening,milking,other',
+            'sire_id' => 'nullable|exists:animals,id',
+            'dam_id' => 'nullable|exists:animals,id',
             'sex' => 'required|in:male,female,other',
             'birth_date' => 'nullable|date',
             'entry_date' => 'nullable|date',
             'weight' => 'nullable|numeric',
             'initial_weight' => 'nullable|numeric',
             'status' => 'required|in:active,sold,dead',
+            'location_id' => 'nullable|exists:locations,id',
             'condition_notes' => 'nullable|string',
         ]);
 
@@ -68,7 +77,9 @@ class AnimalController extends Controller
         $qrCode = base64_encode(QrCode::format('svg')->size(200)->errorCorrection('H')->generate(route('animals.show', $animal->id)));
 
         return Inertia::render('Animals/Show', [
-            'animal' => $animal->load('weights'),
+            'animal' => $animal->load(['weights', 'sire', 'dam', 'offspring', 'productions' => function($q) {
+                $q->orderBy('date', 'desc')->take(10);
+            }]),
             'qrCode' => $qrCode,
         ]);
     }
@@ -76,9 +87,13 @@ class AnimalController extends Controller
     public function edit(Animal $animal)
     {
         $this->authorize('update', $animal);
+        $animals = auth()->user()->farm->animals()->where('id', '!=', $animal->id)->orderBy('name_or_tag')->get();
+        $locations = auth()->user()->farm->locations()->orderBy('name')->get();
 
         return Inertia::render('Animals/Edit', [
-            'animal' => $animal
+            'animal' => $animal,
+            'animals' => $animals,
+            'locations' => $locations
         ]);
     }
 
@@ -91,11 +106,15 @@ class AnimalController extends Controller
             'name_or_tag' => 'required|string|max:255',
             'species' => 'required|string|max:255',
             'breed' => 'nullable|string|max:255',
+            'purpose' => 'required|in:breeding,fattening,milking,other',
+            'sire_id' => 'nullable|exists:animals,id',
+            'dam_id' => 'nullable|exists:animals,id',
             'sex' => 'required|in:male,female,other',
             'birth_date' => 'nullable|date',
             'entry_date' => 'nullable|date',
             'weight' => 'nullable|numeric',
             'status' => 'required|in:active,sold,dead',
+            'location_id' => 'nullable|exists:locations,id',
             'condition_notes' => 'nullable|string',
         ]);
 
@@ -138,8 +157,36 @@ class AnimalController extends Controller
         return back()->with('success', 'Weight recorded successfully.');
     }
 
+    public function storeProduction(Request $request, Animal $animal)
+    {
+        $this->authorize('update', $animal);
+
+        $validated = $request->validate([
+            'type' => 'required|string|max:255',
+            'quantity' => 'required|numeric',
+            'unit' => 'required|string|max:50',
+            'date' => 'required|date',
+        ]);
+
+        $animal->productions()->create(array_merge($validated, [
+            'farm_id' => auth()->user()->farm_id,
+        ]));
+
+        return back()->with('success', 'Production recorded successfully.');
+    }
+
     public function scanner()
     {
         return Inertia::render('Animals/Scanner');
+    }
+
+    public function checkInbreeding(Request $request)
+    {
+        $sireId = $request->query('sire_id');
+        $damId = $request->query('dam_id');
+        
+        $risk = Animal::checkInbreeding($sireId, $damId);
+        
+        return response()->json(['risk' => $risk]);
     }
 }

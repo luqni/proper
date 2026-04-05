@@ -1,25 +1,59 @@
 <script setup>
+import { ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import Card from '@/Components/Card.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
+const props = defineProps({
+    animals: Array,
+    locations: Array
+});
+
 const form = useForm({
     registration_number: '',
     name_or_tag: '',
-    species: 'Sheep',
+    species: 'Sapi',
     breed: '',
     sex: 'male',
+    purpose: 'other',
+    sire_id: '',
+    dam_id: '',
     birth_date: '',
     entry_date: new Date().toISOString().split('T')[0],
     weight: '',
     initial_weight: '',
     status: 'active',
+    location_id: '',
     condition_notes: '',
 });
+
+const inbreedingRisk = ref(null);
+
+const checkInbreeding = async () => {
+    if (!form.sire_id || !form.dam_id) {
+        inbreedingRisk.ref = null;
+        return;
+    }
+    
+    try {
+        const response = await axios.get(route('animals.check-inbreeding'), {
+            params: {
+                sire_id: form.sire_id,
+                dam_id: form.dam_id
+            }
+        });
+        inbreedingRisk.value = response.data.risk;
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+watch(() => [form.sire_id, form.dam_id], checkInbreeding);
 
 const submit = () => {
     form.post(route('animals.store'));
@@ -59,12 +93,20 @@ const submit = () => {
                                 <InputError class="mt-2" :message="form.errors.name_or_tag" />
                             </div>
 
+                            <div>
+                                <InputLabel for="breed" value="Ras (Breed)" />
+                                <TextInput id="breed" type="text" class="mt-1 block w-full" v-model="form.breed" placeholder="Contoh: Limousin, Peranakan Ongole..." />
+                                <InputError class="mt-2" :message="form.errors.breed" />
+                            </div>
+
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="species" value="Species" />
                                     <select id="species" v-model="form.species" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                        <option value="Sheep">Sheep (Domba)</option>
-                                        <option value="Goat">Goat (Kambing)</option>
+                                        <option value="Sapi">Sapi</option>
+                                        <option value="Kambing">Kambing (Goat)</option>
+                                        <option value="Domba">Domba (Sheep)</option>
+                                        <option value="Kerbau">Kerbau (Buffalo)</option>
                                         <option value="Other">Other</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.species" />
@@ -76,6 +118,45 @@ const submit = () => {
                                         <option value="female">Female (Betina)</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.sex" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <InputLabel for="purpose" value="Purpose (Tujuan Ternak)" />
+                                <select id="purpose" v-model="form.purpose" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
+                                    <option value="other">General / Other</option>
+                                    <option value="breeding">Breeding (Pembibitan)</option>
+                                    <option value="fattening">Fattening (Penggemukan)</option>
+                                    <option value="milking">Milking (Perah)</option>
+                                </select>
+                                <InputError class="mt-2" :message="form.errors.purpose" />
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <InputLabel for="sire_id" value="Sire (Bapak)" />
+                                    <select id="sire_id" v-model="form.sire_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
+                                        <option value="">Tidak Diketahui</option>
+                                        <option v-for="a in animals.filter(i => i.sex === 'male')" :key="a.id" :value="a.id">{{ a.name_or_tag }} ({{ a.species }})</option>
+                                    </select>
+                                    <InputError class="mt-2" :message="form.errors.sire_id" />
+                                </div>
+                                <div>
+                                    <InputLabel for="dam_id" value="Dam (Induk)" />
+                                    <select id="dam_id" v-model="form.dam_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
+                                        <option value="">Tidak Diketahui</option>
+                                        <option v-for="a in animals.filter(i => i.sex === 'female')" :key="a.id" :value="a.id">{{ a.name_or_tag }} ({{ a.species }})</option>
+                                    </select>
+                                    <InputError class="mt-2" :message="form.errors.dam_id" />
+                                </div>
+                            </div>
+                            
+                            <!-- Inbreeding Warning -->
+                            <div v-if="inbreedingRisk" class="p-3 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3 text-red-700 animate-pulse">
+                                <i class="fas fa-triangle-exclamation text-lg"></i>
+                                <div class="text-xs font-bold uppercase tracking-tight">
+                                    <p>{{ __('Warning: Inbreeding Risk Detected!') }}</p>
+                                    <p class="mt-0.5 opacity-80">{{ inbreedingRisk }}</p>
                                 </div>
                             </div>
                         </div>
@@ -118,6 +199,15 @@ const submit = () => {
                                     <option value="dead">Dead</option>
                                 </select>
                                 <InputError class="mt-2" :message="form.errors.status" />
+                            </div>
+
+                            <div>
+                                <InputLabel for="location_id" value="Lokasi Ternak" />
+                                <select id="location_id" v-model="form.location_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
+                                    <option value="">{{ __('Unassigned') }}</option>
+                                    <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }} ({{ loc.type }})</option>
+                                </select>
+                                <InputError class="mt-2" :message="form.errors.location_id" />
                             </div>
                         </div>
                     </div>
