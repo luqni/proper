@@ -39,6 +39,7 @@ class DashboardController extends Controller
             'notes_count' => $farm->notes()->count(),
             'events_today_count' => $farm->events()->whereDate('start_time', Carbon::today())->count(),
             'feedings_count' => $farm->feedings()->count(),
+            'feeds_count' => $farm->feeds()->count(),
             'health_records_count' => $farm->healthRecords()->count(),
         ];
 

@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 
 const props = defineProps({
     stats: Object,
@@ -58,6 +59,12 @@ const dashboardCards = [
         link: route('notes.index')
     },
     { 
+        title: 'Pakan', 
+        subtitle: `${props.stats.feeds_count} Ingred.`, 
+        image: 'https://cdn-icons-png.flaticon.com/512/1047/1047711.png',
+        link: route('feeds.index')
+    },
+    { 
         title: 'Calendar', 
         subtitle: `${props.stats.events_today_count} Today`, 
         image: 'https://cdn-icons-png.flaticon.com/512/3652/3652191.png',
@@ -90,7 +97,7 @@ const vFocus = {
         <div class="relative -mt-4 -mx-4 sm:-mx-6 lg:-mx-8">
             <!-- Hero Section -->
             <div class="relative h-80 sm:h-96 w-full overflow-hidden rounded-b-[3rem] shadow-2xl">
-                <img :src="farm.cover_photo ? `/storage/${farm.cover_photo}` : '/images/farm-hero.png'" alt="Farm Hero" class="w-full h-full object-cover grayscale-[0.1] brightness-[0.85]" />
+                <img :src="farm.cover_photo ? `/storage/${farm.cover_photo}` : '/images/farm-default-banner.jpg'" alt="Farm Hero" class="w-full h-full object-cover grayscale-[0.1] brightness-[0.85]" />
                 
                 <!-- Top Floating Bar -->
                 <div class="absolute top-6 left-4 right-4 flex items-center justify-between">
@@ -110,8 +117,9 @@ const vFocus = {
                             <i v-if="!isEditingFarmName" class="fas fa-pen ml-2 text-[10px] text-gray-400 opacity-0 group-hover/name:opacity-100 transition"></i>
                         </div>
                     </div>
-                    <div class="ml-3 hidden sm:flex items-center">
-                        <img :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}&background=ffcc00`" class="h-10 w-10 rounded-full border-2 border-white shadow-lg" />
+                    <div class="ml-3 flex items-center">
+                        <LanguageSwitcher variant="white" />
+                        <img :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}&background=ffcc00`" class="h-10 w-10 rounded-full border-2 border-white shadow-lg ml-3 hidden sm:block" />
                     </div>
                 </div>
 

@@ -6,10 +6,12 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import OfflineIndicator from '@/Components/OfflineIndicator.vue';
 import InstallPrompt from '@/Components/InstallPrompt.vue';
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 
 const navItems = [
     { name: 'Dashboard', route: 'dashboard', icon: 'fas fa-house' },
     { name: 'Animals', route: 'animals.index', icon: 'fas fa-cow', pattern: 'animals.*' }, 
+    { name: 'Pakan', route: 'feeds.index', icon: 'fas fa-leaf', pattern: 'feeds.*', hiddenOnMobile: true },
     { name: 'Scanner', route: 'scanner', icon: 'fas fa-qrcode', pattern: 'scanner' },
     { name: 'Finances', route: 'finances.index', icon: 'fas fa-wallet', pattern: 'finances.*' },
     { name: 'Team', route: 'teams.index', icon: 'fas fa-users', pattern: 'teams.*' },
@@ -80,31 +82,26 @@ const switchLanguage = (locale) => {
             <header v-if="!hideHeader" class="bg-white/80 backdrop-blur-md shadow-sm border-b border-emerald-100 shrink-0 sticky top-0 z-30">
                 <div class="flex items-center justify-between min-h-[4.5rem] py-2 px-4 md:px-8 max-w-7xl mx-auto w-full">
                     <div class="flex items-center min-w-0 flex-1 mr-4">
-                        <!-- Mobile Logo/Title Section (Similar to Screenshot) -->
-                        <div class="flex items-center bg-emerald-50 rounded-2xl border border-emerald-100 p-1.5 pl-3 pr-2 shadow-sm w-full sm:max-w-xs group cursor-pointer hover:bg-white transition-all md:hidden">
-                            <i class="fas fa-location-dot text-emerald-600 mr-2.5 text-sm"></i>
-                            <span class="text-xs font-black text-emerald-950 truncate flex-1 uppercase tracking-wider">Pintar Ternak</span>
-                            <i class="fas fa-chevron-down text-emerald-300 ml-2 text-[10px]"></i>
-                        </div>
+                        <template v-if="$slots.header">
+                            <div class="w-full">
+                                <slot name="header"></slot>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <!-- Mobile Logo/Title Section (Similar to Screenshot) -->
+                            <div class="flex items-center bg-emerald-50 rounded-2xl border border-emerald-100 p-1.5 pl-3 pr-2 shadow-sm w-full sm:max-w-xs group cursor-pointer hover:bg-white transition-all md:hidden">
+                                <i class="fas fa-location-dot text-emerald-600 mr-2.5 text-sm"></i>
+                                <span class="text-xs font-black text-emerald-950 truncate flex-1 uppercase tracking-wider">Pintar Ternak</span>
+                                <i class="fas fa-chevron-down text-emerald-300 ml-2 text-[10px]"></i>
+                            </div>
 
-                        <!-- Desktop Header Title -->
-                        <h1 class="hidden md:block text-xl font-black text-emerald-950 tracking-tight w-full truncate"><slot name="header"></slot></h1>
+                            <!-- Desktop Header Title -->
+                            <h1 class="hidden md:block text-xl font-black text-emerald-950 tracking-tight w-full truncate">Pintar Ternak</h1>
+                        </template>
                     </div>
 
                     <div class="flex items-center space-x-3">
-                        <!-- Language Switcher -->
-                        <div class="hidden sm:flex items-center bg-emerald-50 rounded-xl p-1 border border-emerald-100/50">
-                            <button @click="switchLanguage('id')" 
-                                :class="[$page.props.locale === 'id' ? 'bg-white text-emerald-700 shadow-sm' : 'text-emerald-900/30 hover:text-emerald-700']"
-                                class="px-2.5 py-1.5 text-[10px] font-black rounded-lg transition-all uppercase leading-none">
-                                ID
-                            </button>
-                            <button @click="switchLanguage('en')" 
-                                :class="[$page.props.locale === 'en' ? 'bg-white text-emerald-700 shadow-sm' : 'text-emerald-900/30 hover:text-emerald-700']"
-                                class="px-2.5 py-1.5 text-[10px] font-black rounded-lg transition-all uppercase leading-none">
-                                EN
-                            </button>
-                        </div>
+                        <LanguageSwitcher class="hidden sm:flex" />
                         
                         <OfflineIndicator />
 
@@ -156,7 +153,7 @@ const switchLanguage = (locale) => {
 
         <!-- Mobile Bottom Navigation -->
         <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-emerald-100 shadow-[0_-8px_30px_rgba(6,78,59,0.08)] flex justify-around items-center px-4 py-3 pb-safe w-full rounded-t-[2.5rem]">
-            <Link v-for="item in navItems" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'text-emerald-700 bg-emerald-50 scale-110 shadow-sm' : 'text-emerald-900/40 hover:text-emerald-900', 'flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 origin-bottom']">
+            <Link v-for="item in navItems.filter(i => !i.hiddenOnMobile)" :key="item.name" :href="route(item.route)" :class="[isActive(item) ? 'text-emerald-700 bg-emerald-50 scale-110 shadow-sm' : 'text-emerald-900/40 hover:text-emerald-900', 'flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 origin-bottom']">
                 <template v-if="item.name === 'Profile'">
                     <div class="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-[10px] font-black text-emerald-700 border border-emerald-200 mb-1 transition-all" :class="[isActive(item) ? 'scale-110 border-emerald-400 shadow-sm bg-white' : '']">
                         {{ $page.props.auth.user.name.charAt(0) }}

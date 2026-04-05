@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 
 const props = defineProps({
     groupedAnimals: Object,
@@ -57,6 +58,7 @@ const getSpeciesIcon = (species) => {
                 <div class="flex justify-between items-center max-w-4xl mx-auto">
                     <h1 class="text-3xl font-extrabold tracking-tight">{{ __('Animals') }}</h1>
                     <div class="flex items-center space-x-3">
+                        <LanguageSwitcher variant="white" />
                         <Link :href="route('animals.create')" class="bg-emerald-700/50 hover:bg-emerald-600 backdrop-blur-md px-4 py-2 rounded-full flex items-center shadow-sm border border-emerald-500/30 transition">
                             <span class="text-lg font-bold mr-1">+</span>
                             <span class="font-bold text-sm">{{ __('New') }}</span>

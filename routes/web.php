@@ -13,6 +13,7 @@ use App\Http\Controllers\FeedingController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FarmController;
+use App\Http\Controllers\FeedController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('locale', [\App\Http\Controllers\LocaleController::class, 'update'])->name('locale.update');
     Route::get('animals/scanner', [AnimalController::class, 'scanner'])->name('scanner');
     Route::resource('animals', AnimalController::class);
+    Route::resource('feeds', FeedController::class);
     Route::resource('tasks', TaskController::class);
     Route::resource('finances', FinancialController::class);
     Route::resource('rations', RationController::class);

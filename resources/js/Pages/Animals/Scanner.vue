@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import Card from '@/Components/Card.vue';
@@ -51,6 +51,31 @@ const startScanner = () => {
 
 onMounted(() => {
     startScanner();
+
+    // Simple observer to translate library buttons
+    const observer = new MutationObserver(() => {
+        const isId = usePage().props.locale === 'id';
+        const buttons = document.querySelectorAll('#qr-reader button');
+        
+        buttons.forEach(btn => {
+            if (btn.innerText.includes('Request Camera Permissions')) {
+                if (isId) btn.innerText = 'Minta Izin Kamera';
+            } else if (btn.innerText.includes('Minta Izin Kamera')) {
+                if (!isId) btn.innerText = 'Request Camera Permissions';
+                
+            } else if (btn.innerText.includes('Scan an Image File')) {
+                if (isId) btn.innerText = 'Pindai File Gambar';
+            } else if (btn.innerText.includes('Pindai File Gambar')) {
+                if (!isId) btn.innerText = 'Scan an Image File';
+                
+            } else if (btn.innerText.includes('Stop Scanning')) {
+                if (isId) btn.innerText = 'Berhenti Memindai';
+            } else if (btn.innerText.includes('Berhenti Memindai')) {
+                if (!isId) btn.innerText = 'Stop Scanning';
+            }
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 });
 
 onUnmounted(() => {
