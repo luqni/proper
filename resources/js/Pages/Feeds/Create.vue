@@ -17,6 +17,7 @@ const form = useForm({
     tdn: '',
     dry_matter: '',
     price_per_kg: '',
+    stock: '',
 });
 
 const submit = () => {
@@ -66,6 +67,12 @@ const submit = () => {
                                 <InputLabel for="price_per_kg" :value="__('Price per kg')" />
                                 <TextInput id="price_per_kg" type="number" step="1" class="mt-1 block w-full" v-model="form.price_per_kg" />
                                 <InputError class="mt-2" :message="form.errors.price_per_kg" />
+                            </div>
+
+                            <div>
+                                <InputLabel for="stock" :value="__('Initial Stock (kg)')" />
+                                <TextInput id="stock" type="number" step="0.01" class="mt-1 block w-full" v-model="form.stock" />
+                                <InputError class="mt-2" :message="form.errors.stock" />
                             </div>
                         </div>
 

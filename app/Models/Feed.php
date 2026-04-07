@@ -12,4 +12,16 @@ class Feed extends Model
     {
         return $this->belongsTo(Farm::class);
     }
+
+    public function refills()
+    {
+        return $this->hasMany(FeedRefill::class);
+    }
+
+    public function rations()
+    {
+        return $this->belongsToMany(Ration::class, 'ration_feed')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }

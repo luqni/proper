@@ -42,6 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('animals/scanner', [AnimalController::class, 'scanner'])->name('scanner');
     Route::resource('animals', AnimalController::class);
     Route::resource('feeds', FeedController::class);
+    Route::post('feeds/{feed}/refill', [FeedController::class, 'refill'])->name('feeds.refill');
+    Route::post('rations/{ration}/mix', [RationController::class, 'mix'])->name('rations.mix');
     Route::resource('tasks', TaskController::class);
     Route::resource('finances', FinancialController::class);
     Route::resource('rations', RationController::class);
@@ -52,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('events', EventController::class);
     Route::resource('farms', FarmController::class)->only(['update']);
     Route::post('farms/{farm}/cover', [FarmController::class, 'updateCover'])->name('farms.updateCover');
-    Route::resource('teams', TeamController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('teams', TeamController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::post('animals/{animal}/weights', [AnimalController::class, 'storeWeight'])->name('animals.weights.store');
     Route::post('animals/{animal}/productions', [AnimalController::class, 'storeProduction'])->name('animals.productions.store');
     Route::get('animals/check-inbreeding', [AnimalController::class, 'checkInbreeding'])->name('animals.check-inbreeding');

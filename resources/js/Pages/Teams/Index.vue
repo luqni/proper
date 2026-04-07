@@ -13,6 +13,8 @@ const props = defineProps({
 });
 
 const isAdding = ref(false);
+const isEditing = ref(false);
+const editingId = ref(null);
 
 const form = useForm({
     name: '',
@@ -21,13 +23,41 @@ const form = useForm({
     role: 'staff'
 });
 
+const openAddModal = () => {
+    isEditing.value = false;
+    isAdding.value = true;
+    form.reset();
+    form.clearErrors();
+};
+
+const editMember = (member) => {
+    isEditing.value = true;
+    isAdding.value = true;
+    editingId.value = member.id;
+    form.name = member.name;
+    form.email = member.email;
+    form.role = member.role;
+    form.password = '';
+    form.clearErrors();
+};
+
 const submit = () => {
-    form.post(route('teams.store'), {
-        onSuccess: () => {
-            isAdding.value = false;
-            form.reset();
-        }
-    });
+    if (isEditing.value) {
+        form.put(route('teams.update', editingId.value), {
+            onSuccess: () => {
+                isAdding.value = false;
+                isEditing.value = false;
+                form.reset();
+            }
+        });
+    } else {
+        form.post(route('teams.store'), {
+            onSuccess: () => {
+                isAdding.value = false;
+                form.reset();
+            }
+        });
+    }
 };
 
 const removeMember = (id) => {
@@ -45,12 +75,15 @@ const removeMember = (id) => {
 
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">{{ __('Farm Team') }}</h2>
-            <PrimaryButton v-if="$page.props.auth.user.role === 'owner'" @click="isAdding = true">{{ __('Add Member') }}</PrimaryButton>
+            <PrimaryButton v-if="$page.props.auth.user.role === 'owner'" @click="openAddModal">{{ __('Add Member') }}</PrimaryButton>
         </div>
 
-        <!-- Add Member Form -->
+        <!-- Add/Edit Member Form -->
         <div v-if="isAdding" class="mb-8">
-            <Card class="p-6">
+            <Card class="p-6 border-2 border-farm-200">
+                <h3 class="text-lg font-bold mb-4 text-farm-700">
+                    {{ isEditing ? __('Edit Member') : __('Add New Member') }}
+                </h3>
                 <form @submit.prevent="submit" class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -65,7 +98,7 @@ const removeMember = (id) => {
                         </div>
                         <div>
                             <InputLabel for="password" :value="__('Password')" />
-                            <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" required />
+                            <TextInput id="password" v-model="form.password" type="password" class="mt-1 block w-full" :required="!isEditing" :placeholder="isEditing ? __('Leave blank to keep current') : ''" />
                             <InputError :message="form.errors.password" class="mt-2" />
                         </div>
                         <div>
@@ -79,7 +112,9 @@ const removeMember = (id) => {
                     </div>
                     <div class="flex justify-end space-x-3 mt-6">
                         <button type="button" @click="isAdding = false" class="text-gray-500 font-bold hover:text-gray-700">{{ __('Cancel') }}</button>
-                        <PrimaryButton :disabled="form.processing">{{ __('Invite Member') }}</PrimaryButton>
+                        <PrimaryButton :disabled="form.processing">
+                            {{ isEditing ? __('Update Member') : __('Invite Member') }}
+                        </PrimaryButton>
                     </div>
                 </form>
             </Card>
@@ -103,10 +138,15 @@ const removeMember = (id) => {
                     </span>
                 </div>
 
-                <div v-if="$page.props.auth.user.role === 'owner' && member.id !== $page.props.auth.user.id" 
-                    @click="removeMember(member.id)"
-                    class="mt-6 text-red-500 text-sm font-bold cursor-pointer hover:underline opacity-0 group-hover:opacity-100 transition">
-                    {{ __('Remove Access') }}
+                <div v-if="$page.props.auth.user.role === 'owner'" class="mt-6 flex space-x-4 opacity-0 group-hover:opacity-100 transition">
+                    <button @click="editMember(member)" class="text-farm-600 text-sm font-bold hover:underline">
+                        {{ __('Edit') }}
+                    </button>
+                    <button v-if="member.id !== $page.props.auth.user.id" 
+                        @click="removeMember(member.id)"
+                        class="text-red-500 text-sm font-bold hover:underline">
+                        {{ __('Remove') }}
+                    </button>
                 </div>
             </Card>
         </div>

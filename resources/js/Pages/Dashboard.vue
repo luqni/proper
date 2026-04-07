@@ -65,6 +65,12 @@ const dashboardCards = [
         link: route('feeds.index')
     },
     { 
+        title: 'Rations', 
+        subtitle: `${props.stats.rations_count} Mixed`, 
+        image: 'https://cdn-icons-png.flaticon.com/512/3014/3014388.png',
+        link: route('rations.index')
+    },
+    { 
         title: 'Calendar', 
         subtitle: `${props.stats.events_today_count} Today`, 
         image: 'https://cdn-icons-png.flaticon.com/512/3652/3652191.png',

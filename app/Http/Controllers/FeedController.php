@@ -14,6 +14,9 @@ class FeedController extends Controller
     public function index()
     {
         $feeds = auth()->user()->farm->feeds()
+            ->with(['refills' => function($query) {
+                $query->latest('refilled_at')->limit(1);
+            }])
             ->latest()
             ->get();
 
@@ -38,6 +41,7 @@ class FeedController extends Controller
             'tdn' => 'nullable|numeric|min:0',
             'dry_matter' => 'nullable|numeric|min:0',
             'price_per_kg' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
         ]);
 
         auth()->user()->farm->feeds()->create($validated);
@@ -66,11 +70,28 @@ class FeedController extends Controller
             'tdn' => 'nullable|numeric|min:0',
             'dry_matter' => 'nullable|numeric|min:0',
             'price_per_kg' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
         ]);
 
         $feed->update($validated);
 
         return redirect()->route('feeds.index')->with('success', 'Feed ingredient updated successfully.');
+    }
+
+    public function refill(Request $request, Feed $feed)
+    {
+        $this->authorize('update', $feed);
+
+        $validated = $request->validate([
+            'quantity' => 'required|numeric|min:0.01',
+            'refilled_at' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $feed->refills()->create($validated);
+        $feed->increment('stock', $validated['quantity']);
+
+        return redirect()->back()->with('success', 'Stock refilled successfully.');
     }
 
     public function destroy(Feed $feed)

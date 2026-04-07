@@ -26,4 +26,9 @@ class Feeding extends Model
     {
         return $this->belongsTo(Ration::class);
     }
+
+    public function feed()
+    {
+        return $this->belongsTo(Feed::class);
+    }
 }

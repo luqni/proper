@@ -46,6 +46,39 @@ class TeamController extends Controller
         return redirect()->route('teams.index')->with('success', 'Team member added successfully.');
     }
 
+    public function update(Request $request, User $member)
+    {
+        $user = auth()->user();
+        if ($user->role !== 'owner') {
+            abort(403);
+        }
+
+        if ($member->farm_id !== $user->farm_id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$member->id,
+            'password' => 'nullable|string|min:8',
+            'role' => 'required|in:owner,staff',
+        ]);
+
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+        ];
+
+        if (!empty($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
+        }
+
+        $member->update($data);
+
+        return redirect()->route('teams.index')->with('success', 'Team member updated successfully.');
+    }
+
     public function destroy(User $member)
     {
         $user = auth()->user();

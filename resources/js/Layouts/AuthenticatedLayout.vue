@@ -12,6 +12,7 @@ const navItems = [
     { name: 'Dashboard', route: 'dashboard', icon: 'fas fa-house' },
     { name: 'Animals', route: 'animals.index', icon: 'fas fa-cow', pattern: 'animals.*' }, 
     { name: 'Pakan', route: 'feeds.index', icon: 'fas fa-leaf', pattern: 'feeds.*', hiddenOnMobile: true },
+    { name: 'Rations', route: 'rations.index', icon: 'fas fa-bowl-food', pattern: 'rations.*', hiddenOnMobile: true },
     { name: 'Scanner', route: 'scanner', icon: 'fas fa-qrcode', pattern: 'scanner' },
     { name: 'Finances', route: 'finances.index', icon: 'fas fa-wallet', pattern: 'finances.*' },
     { name: 'Team', route: 'teams.index', icon: 'fas fa-users', pattern: 'teams.*' },

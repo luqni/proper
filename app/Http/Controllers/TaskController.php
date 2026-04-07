@@ -11,13 +11,17 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = auth()->user()->farm->tasks()
+        $farm = auth()->user()->farm;
+        $tasks = $farm->tasks()
             ->with('assignee')
             ->latest()
             ->get();
 
+        $users = $farm->users()->get();
+
         return Inertia::render('Tasks/Index', [
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'users' => $users
         ]);
     }
 
@@ -44,7 +48,11 @@ class TaskController extends Controller
         $this->authorize('update', $task);
 
         $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,completed',
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'assigned_to' => 'sometimes|required|exists:users,id',
+            'status' => 'sometimes|required|in:pending,in_progress,completed',
         ]);
 
         $task->update($validated);
