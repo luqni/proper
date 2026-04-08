@@ -23,11 +23,11 @@ class FinancialController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'amount' => 'required|numeric',
             'type' => 'required|in:income,expense',
             'date' => 'required|date',
-            'notes' => 'nullable|string',
+            'description' => 'nullable|string',
         ]);
 
         auth()->user()->farm->financials()->create($validated);
