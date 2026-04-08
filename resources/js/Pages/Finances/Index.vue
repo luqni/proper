@@ -14,11 +14,11 @@ const props = defineProps({
 const isAdding = ref(false);
 
 const form = useForm({
-    title: '',
+    category: '',
     amount: '',
     type: 'expense',
     date: new Date().toISOString().split('T')[0],
-    notes: ''
+    description: ''
 });
 
 const submit = () => {
@@ -82,8 +82,8 @@ const formatCurrency = (amount) => {
             <Card class="p-6">
                 <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
-                        <InputLabel for="title" :value="__('Description')" />
-                        <TextInput id="title" v-model="form.title" type="text" class="mt-1 block w-full" required />
+                        <InputLabel for="category" :value="__('Description')" />
+                        <TextInput id="category" v-model="form.category" type="text" class="mt-1 block w-full" required />
                     </div>
                     <div>
                         <InputLabel for="type" :value="__('Type')" />
@@ -117,7 +117,7 @@ const formatCurrency = (amount) => {
                         <i v-else class="fas fa-arrow-down"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900">{{ finance.title }}</h4>
+                        <h4 class="font-bold text-gray-900">{{ finance.category }}</h4>
                         <p class="text-xs text-gray-500">{{ new Date(finance.date).toLocaleDateString('id-ID') }}</p>
                     </div>
                 </div>

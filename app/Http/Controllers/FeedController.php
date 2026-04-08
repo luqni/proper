@@ -43,6 +43,15 @@ class FeedController extends Controller
             'price_per_kg' => 'nullable|numeric|min:0',
             'stock' => 'nullable|numeric|min:0',
         ]);
+        $validated = array_merge($validated, [
+            'price_per_kg' => $request->price_per_kg ?? 0,
+            'protein' => $request->protein ?? 0,
+            'fat' => $request->fat ?? 0,
+            'fiber' => $request->fiber ?? 0,
+            'tdn' => $request->tdn ?? 0,
+            'dry_matter' => $request->dry_matter ?? 0,
+        ]);
+
 
         auth()->user()->farm->feeds()->create($validated);
 
@@ -71,6 +80,14 @@ class FeedController extends Controller
             'dry_matter' => 'nullable|numeric|min:0',
             'price_per_kg' => 'nullable|numeric|min:0',
             'stock' => 'nullable|numeric|min:0',
+        ]);
+        $validated = array_merge($validated, [
+            'price_per_kg' => $request->price_per_kg ?? 0,
+            'protein' => $request->protein ?? 0,
+            'fat' => $request->fat ?? 0,
+            'fiber' => $request->fiber ?? 0,
+            'tdn' => $request->tdn ?? 0,
+            'dry_matter' => $request->dry_matter ?? 0,
         ]);
 
         $feed->update($validated);
