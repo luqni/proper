@@ -82,8 +82,12 @@ const formatCurrency = (amount) => {
             <Card class="p-6">
                 <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
-                        <InputLabel for="category" :value="__('Description')" />
+                        <InputLabel for="category" :value="__('Title')" />
                         <TextInput id="category" v-model="form.category" type="text" class="mt-1 block w-full" required />
+                    </div>
+                    <div class="md:col-span-3">
+                        <InputLabel for="description" :value="__('Description')" />
+                        <textarea id="description" v-model="form.description" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500" rows="2"></textarea>
                     </div>
                     <div>
                         <InputLabel for="type" :value="__('Type')" />
@@ -117,8 +121,9 @@ const formatCurrency = (amount) => {
                         <i v-else class="fas fa-arrow-down"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-gray-900">{{ finance.category }}</h4>
-                        <p class="text-xs text-gray-500">{{ new Date(finance.date).toLocaleDateString('id-ID') }}</p>
+                        <h4 class="font-bold text-gray-900 leading-tight">{{ finance.category }}</h4>
+                        <p v-if="finance.description" class="text-sm text-gray-600 mt-0.5">{{ finance.description }}</p>
+                        <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">{{ new Date(finance.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-6">
