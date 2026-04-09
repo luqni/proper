@@ -43,48 +43,48 @@ const deleteRecord = (id) => {
     <Head title="Health Records" />
 
     <AuthenticatedLayout>
-        <template #header>Health & Vaccines</template>
+        <template #header>{{ __('Health & Vaccines') }}</template>
 
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Health Logs</h2>
-            <PrimaryButton @click="isAdding = true">Add Record</PrimaryButton>
+            <h2 class="text-2xl font-bold text-gray-800">{{ __('Health Logs') }}</h2>
+            <PrimaryButton @click="isAdding = true">{{ __('Add Record') }}</PrimaryButton>
         </div>
 
         <div v-if="isAdding" class="mb-8">
             <Card class="p-6">
                 <form @submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
-                        <InputLabel for="animal_id" value="Animal" />
+                        <InputLabel for="animal_id" :value="__('Animal')" />
                         <select id="animal_id" v-model="form.animal_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500" required>
-                            <option value="">Select Animal</option>
+                            <option value="">{{ __('Select Animal') }}</option>
                             <option v-for="animal in animals" :key="animal.id" :value="animal.id">{{ animal.name_or_tag }} ({{ animal.registration_number }})</option>
                         </select>
                     </div>
                     <div>
-                        <InputLabel for="type" value="Treatment Type" />
+                        <InputLabel for="type" :value="__('Treatment Type')" />
                         <select id="type" v-model="form.type" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                            <option value="vaccine">Vaccine (Vaksin)</option>
-                            <option value="medication">Medication (Obat)</option>
-                            <option value="checkup">Checkup (Cek Rutin)</option>
-                            <option value="treatment">Treatment (Pengobatan)</option>
-                            <option value="vitamin">Vitamin</option>
+                            <option value="vaccine">{{ __('Vaccine') }}</option>
+                            <option value="medication">{{ __('Medication') }}</option>
+                            <option value="checkup">{{ __('Checkup') }}</option>
+                            <option value="treatment">{{ __('Treatment') }}</option>
+                            <option value="vitamin">{{ __('Vitamin') }}</option>
                         </select>
                     </div>
                     <div>
-                        <InputLabel for="name" value="Product/Treatment Name" />
-                        <TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" placeholder="e.g. Vitamin B12" required />
+                        <InputLabel for="name" :value="__('Product/Treatment Name')" />
+                        <TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" :placeholder="__('e.g. Vitamin B12')" required />
                     </div>
                     <div>
-                        <InputLabel for="date" value="Date" />
+                        <InputLabel for="date" :value="__('Date')" />
                         <TextInput id="date" v-model="form.date" type="date" class="mt-1 block w-full" required />
                     </div>
                     <div class="lg:col-span-2">
-                        <InputLabel for="notes" value="Notes" />
+                        <InputLabel for="notes" :value="__('Notes')" />
                         <TextInput id="notes" v-model="form.notes" type="text" class="mt-1 block w-full" />
                     </div>
                     <div class="lg:col-span-3 flex justify-end space-x-3 mt-4">
-                        <button type="button" @click="isAdding = false" class="text-gray-500 font-bold hover:text-gray-700">Cancel</button>
-                        <PrimaryButton :disabled="form.processing">Save Record</PrimaryButton>
+                        <button type="button" @click="isAdding = false" class="text-gray-500 font-bold hover:text-gray-700">{{ __('Cancel') }}</button>
+                        <PrimaryButton :disabled="form.processing">{{ __('Save Record') }}</PrimaryButton>
                     </div>
                 </form>
             </Card>
@@ -94,11 +94,12 @@ const deleteRecord = (id) => {
             <Table>
                 <template #head>
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Animal</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Treatment</th>
-                        <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Date') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Animal') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Treatment Type') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Product/Treatment Name') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Notes') }}</th>
+                        <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Actions') }}</th>
                     </tr>
                 </template>
                 <template #body>
@@ -117,12 +118,15 @@ const deleteRecord = (id) => {
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                             {{ record.name }}
                         </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 italic max-w-xs truncate">
+                            {{ record.notes }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            <button @click="deleteRecord(record.id)" class="text-red-600 hover:text-red-900 font-bold">Delete</button>
+                            <button @click="deleteRecord(record.id)" class="text-red-600 hover:text-red-900 font-bold">{{ __('Delete') }}</button>
                         </td>
                     </tr>
                     <tr v-if="records.length === 0">
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic">No health records found.</td>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-500 italic">{{ __('No health records found.') }}</td>
                     </tr>
                 </template>
             </Table>

@@ -261,5 +261,19 @@
     "Assigned To": "Ditugaskan Ke",
     "Me / All": "Saya / Semua",
     "Me": "Saya",
-    "Assigned to": "Ditugaskan ke"
+    "Assigned to": "Ditugaskan ke",
+    "Health & Vaccines": "Kesehatan & Vaksin",
+    "Health Logs": "Log Kesehatan",
+    "Add Record": "Tambah Catatan",
+    "Treatment Type": "Tipe Perawatan",
+    "Product/Treatment Name": "Perawatan",
+    "No health records found.": "Tidak ada catatan kesehatan yang ditemukan.",
+    "Vaccine": "Vaksin",
+    "Medication": "Obat",
+    "Checkup": "Cek Rutin",
+    "Treatment": "Pengobatan",
+    "Vitamin": "Vitamin",
+    "Animal": "Hewan",
+    "Additional details...": "Detail tambahan...",
+    "e.g. Vitamin B12": "misal. Vitamin B12"
 }

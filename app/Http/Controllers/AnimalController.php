@@ -77,7 +77,9 @@ class AnimalController extends Controller
         $qrCode = base64_encode(QrCode::format('svg')->size(200)->errorCorrection('H')->generate(route('animals.show', $animal->id)));
 
         return Inertia::render('Animals/Show', [
-            'animal' => $animal->load(['weights', 'sire', 'dam', 'offspring', 'productions' => function($q) {
+            'animal' => $animal->load(['weights', 'sire', 'dam', 'offspring', 'healthRecords' => function($q) {
+                $q->latest('date');
+            }, 'productions' => function($q) {
                 $q->orderBy('date', 'desc')->take(10);
             }]),
             'qrCode' => $qrCode,
