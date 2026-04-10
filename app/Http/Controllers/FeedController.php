@@ -50,6 +50,7 @@ class FeedController extends Controller
             'fiber' => $request->fiber ?? 0,
             'tdn' => $request->tdn ?? 0,
             'dry_matter' => $request->dry_matter ?? 0,
+            'stock' => $request->stock ?? 0,
         ]);
 
 
@@ -88,6 +89,7 @@ class FeedController extends Controller
             'fiber' => $request->fiber ?? 0,
             'tdn' => $request->tdn ?? 0,
             'dry_matter' => $request->dry_matter ?? 0,
+            'stock' => $request->stock ?? 0,
         ]);
 
         $feed->update($validated);

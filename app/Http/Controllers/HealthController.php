@@ -35,7 +35,7 @@ class HealthController extends Controller
 
         auth()->user()->farm->healthRecords()->create($validated);
 
-        return redirect()->route('health.index')->with('success', 'Health record added successfully.');
+        return back()->with('success', 'Health record added successfully.');
     }
 
     public function destroy(HealthRecord $health)

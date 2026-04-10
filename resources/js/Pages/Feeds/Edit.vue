@@ -111,19 +111,19 @@ const deleteFeed = () => {
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="fat" :value="__('Lemak (Fat)')" />
+                                    <InputLabel for="fat" :value="__('Fat')" />
                                     <TextInput id="fat" type="number" step="0.01" class="mt-1 block w-full" v-model="form.fat" />
                                     <InputError class="mt-2" :message="form.errors.fat" />
                                 </div>
                                 <div>
-                                    <InputLabel for="fiber" :value="__('Serat (Fiber)')" />
+                                    <InputLabel for="fiber" :value="__('Fiber')" />
                                     <TextInput id="fiber" type="number" step="0.01" class="mt-1 block w-full" v-model="form.fiber" />
                                     <InputError class="mt-2" :message="form.errors.fiber" />
                                 </div>
                             </div>
 
                             <div>
-                                <InputLabel for="dry_matter" :value="__('Bahan Kering (BK)')" />
+                                <InputLabel for="dry_matter" :value="__('Dry Matter')" />
                                 <TextInput id="dry_matter" type="number" step="0.01" class="mt-1 block w-full" v-model="form.dry_matter" />
                                 <InputError class="mt-2" :message="form.errors.dry_matter" />
                             </div>

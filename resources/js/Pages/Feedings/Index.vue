@@ -6,7 +6,6 @@ import Table from '@/Components/Table.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -59,13 +58,6 @@ const handleFeedChange = () => {
     <Head :title="__('Feeding Records')" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <div class="flex justify-between items-center w-full">
-                <span class="text-xl font-bold">{{ __('Feeding Records') }}</span>
-                <LanguageSwitcher />
-            </div>
-        </template>
-
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">{{ __('Feeding Logs') }}</h2>
             <PrimaryButton @click="isAdding = true">{{ __('Log Feeding') }}</PrimaryButton>
@@ -123,6 +115,7 @@ const handleFeedChange = () => {
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Animal') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Feed / Ration') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Qty') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Notes') }}</th>
                         <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Actions') }}</th>
                     </tr>
                 </template>
@@ -147,6 +140,9 @@ const handleFeedChange = () => {
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-farm-600">
                             {{ feeding.quantity }} kg
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                            {{ feeding.notes }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                             <button @click="deleteFeeding(feeding.id)" class="text-red-600 hover:text-red-900 font-bold">{{ __('Delete') }}</button>

@@ -61,7 +61,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Add New Animal" />
+    <Head :title="__('Add New Animal')" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -69,7 +69,7 @@ const submit = () => {
                 <Link :href="route('animals.index')" class="text-farm-600 hover:text-farm-800 transition bg-farm-50 p-1.5 rounded-lg border border-transparent hover:border-farm-200">
                     <i class="fas fa-arrow-left"></i>
                 </Link>
-                <span class="text-xl font-bold">Add New Animal</span>
+                <span class="text-xl font-bold">{{ __('Add New Animal') }}</span>
             </div>
         </template>
 
@@ -79,52 +79,52 @@ const submit = () => {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Basic Info -->
                         <div class="space-y-4">
-                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-earth-100 pb-2">Identification</h3>
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-earth-100 pb-2">{{ __('Identification') }}</h3>
                             
                             <div>
-                                <InputLabel for="registration_number" value="Registration Number / Barcode" />
+                                <InputLabel for="registration_number" :value="__('Registration Number / Barcode')" />
                                 <TextInput id="registration_number" type="text" class="mt-1 block w-full" v-model="form.registration_number" />
                                 <InputError class="mt-2" :message="form.errors.registration_number" />
                             </div>
 
                             <div>
-                                <InputLabel for="name_or_tag" value="Name or tag" />
+                                <InputLabel for="name_or_tag" :value="__('Name or tag')" />
                                 <TextInput id="name_or_tag" type="text" class="mt-1 block w-full" v-model="form.name_or_tag" required />
                                 <InputError class="mt-2" :message="form.errors.name_or_tag" />
                             </div>
 
                             <div>
-                                <InputLabel for="breed" value="Ras (Breed)" />
-                                <TextInput id="breed" type="text" class="mt-1 block w-full" v-model="form.breed" placeholder="Contoh: Limousin, Peranakan Ongole..." />
+                                <InputLabel for="breed" :value="__('Breed')" />
+                                <TextInput id="breed" type="text" class="mt-1 block w-full" v-model="form.breed" :placeholder="__('Contoh: Limousin, Peranakan Ongole...')" />
                                 <InputError class="mt-2" :message="form.errors.breed" />
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="species" value="Species" />
+                                    <InputLabel for="species" :value="__('Species')" />
                                     <select id="species" v-model="form.species" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                        <option value="Sapi">Sapi</option>
-                                        <option value="Kambing">Kambing (Goat)</option>
-                                        <option value="Domba">Domba (Sheep)</option>
-                                        <option value="Kerbau">Kerbau (Buffalo)</option>
-                                        <option value="Other">Other</option>
+                                        <option value="Cattle / Cow">{{ __('Cattle / Cow') }}</option>
+                                        <option value="Goat">{{ __('Goat') }}</option>
+                                        <option value="Sheep">{{ __('Sheep') }}</option>
+                                        <option value="Buffalo">{{ __('Buffalo') }}</option>
+                                        <option value="Other">{{ __('Other') }}</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.species" />
                                 </div>
                                 <div>
-                                    <InputLabel for="sex" value="Sex" />
+                                    <InputLabel for="sex" :value="__('Sex')" />
                                     <select id="sex" v-model="form.sex" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                        <option value="male">Male (Jantan)</option>
-                                        <option value="female">Female (Betina)</option>
+                                        <option value="male">{{ __('Male') }}</option>
+                                        <option value="female">{{ __('Female') }}</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.sex" />
                                 </div>
                             </div>
 
                             <div>
-                                <InputLabel for="purpose" value="Purpose (Tujuan Ternak)" />
+                                <InputLabel for="purpose" :value="__('Purpose (Tujuan Ternak)')" />
                                 <select id="purpose" v-model="form.purpose" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                    <option value="other">General / Other</option>
+                                    <option value="other">{{ __('General / Other') }}</option>
                                     <option value="breeding">Breeding (Pembibitan)</option>
                                     <option value="fattening">Fattening (Penggemukan)</option>
                                     <option value="milking">Milking (Perah)</option>
@@ -134,7 +134,7 @@ const submit = () => {
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="sire_id" value="Sire (Bapak)" />
+                                    <InputLabel for="sire_id" :value="__('Sire (Bapak)')" />
                                     <select id="sire_id" v-model="form.sire_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
                                         <option value="">Tidak Diketahui</option>
                                         <option v-for="a in animals.filter(i => i.sex === 'male')" :key="a.id" :value="a.id">{{ a.name_or_tag }} ({{ a.species }})</option>
@@ -142,9 +142,9 @@ const submit = () => {
                                     <InputError class="mt-2" :message="form.errors.sire_id" />
                                 </div>
                                 <div>
-                                    <InputLabel for="dam_id" value="Dam (Induk)" />
+                                    <InputLabel for="dam_id" :value="__('Dam (Induk)')" />
                                     <select id="dam_id" v-model="form.dam_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                        <option value="">Tidak Diketahui</option>
+                                        <option value="">{{ __('Tidak Diketahui') }}</option>
                                         <option v-for="a in animals.filter(i => i.sex === 'female')" :key="a.id" :value="a.id">{{ a.name_or_tag }} ({{ a.species }})</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.dam_id" />
@@ -163,16 +163,16 @@ const submit = () => {
 
                         <!-- Dates & Weight -->
                         <div class="space-y-4">
-                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-earth-100 pb-2">Records & Weights</h3>
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest border-b border-earth-100 pb-2">{{ __('Records & Weights') }}</h3>
                             
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="birth_date" value="Birth Date" />
+                                    <InputLabel for="birth_date" :value="__('Birth Date')" />
                                     <TextInput id="birth_date" type="date" class="mt-1 block w-full" v-model="form.birth_date" />
                                     <InputError class="mt-2" :message="form.errors.birth_date" />
                                 </div>
                                 <div>
-                                    <InputLabel for="entry_date" value="Entry Date" />
+                                    <InputLabel for="entry_date" :value="__('Entry Date')" />
                                     <TextInput id="entry_date" type="date" class="mt-1 block w-full" v-model="form.entry_date" />
                                     <InputError class="mt-2" :message="form.errors.entry_date" />
                                 </div>
@@ -180,29 +180,29 @@ const submit = () => {
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="initial_weight" value="Weight on Entry (kg)" />
+                                    <InputLabel for="initial_weight" :value="__('Weight on Entry (kg)')" />
                                     <TextInput id="initial_weight" type="number" step="0.1" class="mt-1 block w-full" v-model="form.initial_weight" />
                                     <InputError class="mt-2" :message="form.errors.initial_weight" />
                                 </div>
                                 <div>
-                                    <InputLabel for="weight" value="Current Weight (kg)" />
+                                    <InputLabel for="weight" :value="__('Current Weight (kg)')" />
                                     <TextInput id="weight" type="number" step="0.1" class="mt-1 block w-full" v-model="form.weight" />
                                     <InputError class="mt-2" :message="form.errors.weight" />
                                 </div>
                             </div>
 
                             <div>
-                                <InputLabel for="status" value="Status" />
+                                <InputLabel for="status" :value="__('Status')" />
                                 <select id="status" v-model="form.status" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                    <option value="active">Active</option>
-                                    <option value="sold">Sold</option>
-                                    <option value="dead">Dead</option>
+                                    <option value="active">{{ __('Active') }}</option>
+                                    <option value="sold">{{ __('Sold') }}</option>
+                                    <option value="dead">{{ __('Dead') }}</option>
                                 </select>
                                 <InputError class="mt-2" :message="form.errors.status" />
                             </div>
 
                             <div>
-                                <InputLabel for="location_id" value="Lokasi Ternak" />
+                                <InputLabel for="location_id" :value="__('Lokasi Ternak')" />
                                 <select id="location_id" v-model="form.location_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
                                     <option value="">{{ __('Unassigned') }}</option>
                                     <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }} ({{ loc.type }})</option>
@@ -213,14 +213,14 @@ const submit = () => {
                     </div>
 
                     <div>
-                        <InputLabel for="condition_notes" value="Condition Notes" />
-                        <textarea id="condition_notes" v-model="form.condition_notes" rows="4" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500" placeholder="Describe the animal's current health or condition..."></textarea>
+                        <InputLabel for="condition_notes" :value="__('Condition Notes')" />
+                        <textarea id="condition_notes" v-model="form.condition_notes" rows="4" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500" :placeholder="__('Describe the animal\'s current health or condition...')"></textarea>
                         <InputError class="mt-2" :message="form.errors.condition_notes" />
                     </div>
 
                     <div class="flex items-center justify-end pt-6 border-t border-earth-100">
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            Save Animal
+                            {{ __('Save Animal') }}
                         </PrimaryButton>
                     </div>
                 </form>

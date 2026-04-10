@@ -18,7 +18,7 @@ const tabs = ref([
 
 onMounted(() => {
     if (props.animal.purpose === 'breeding') {
-        tabs.value.push({ id: 'pedigree', name: __('Pedigree (Silsilah)') });
+        tabs.value.push({ id: 'pedigree', name: __('Pedigree') });
     } else if (props.animal.purpose === 'fattening') {
         tabs.value.push({ id: 'fattening', name: __('Fattening (ADG)') });
     } else if (props.animal.purpose === 'milking') {
@@ -56,6 +56,21 @@ const productionForm = useForm({
 const submitProduction = () => {
     productionForm.post(route('animals.productions.store', props.animal.id), {
         onSuccess: () => productionForm.reset('quantity'),
+    });
+};
+
+const healthForm = useForm({
+    type: 'vaccine',
+    name: '',
+    date: new Date().toISOString().split('T')[0],
+    notes: '',
+    animal_id: props.animal.id
+});
+
+const submitHealth = () => {
+    // We can use the generic health storage route
+    healthForm.post(route('health.store'), {
+        onSuccess: () => healthForm.reset('name', 'notes'),
     });
 };
 </script>
@@ -217,21 +232,21 @@ const submitProduction = () => {
                         </div>
 
                         <div v-if="activeTab === 'pedigree'">
-                            <h3 class="text-lg font-bold text-gray-900 mb-6">{{ __('Animal Pedigree (Silsilah)') }}</h3>
+                            <h3 class="text-lg font-bold text-gray-900 mb-6">{{ __('Animal Pedigree') }}</h3>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="space-y-4">
                                     <h4 class="text-sm font-bold text-gray-500 uppercase tracking-widest">{{ __('Parents') }}</h4>
                                     <div class="p-4 bg-earth-50 rounded-2xl border border-earth-200">
                                         <div class="flex items-center justify-between mb-4 pb-2 border-b border-earth-100">
-                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Sire (Bapak)') }}</span>
+                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Sire') }}</span>
                                             <Link v-if="animal.sire" :href="route('animals.show', animal.sire.id)" class="text-sm font-bold text-emerald-700 hover:underline">
                                                 {{ animal.sire.name_or_tag }}
                                             </Link>
                                             <span v-else class="text-sm text-gray-400 italic">{{ __('Not Recorded') }}</span>
                                         </div>
                                         <div class="flex items-center justify-between">
-                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Dam (Induk)') }}</span>
+                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Dam') }}</span>
                                             <Link v-if="animal.dam" :href="route('animals.show', animal.dam.id)" class="text-sm font-bold text-emerald-700 hover:underline">
                                                 {{ animal.dam.name_or_tag }}
                                             </Link>
@@ -348,8 +363,69 @@ const submitProduction = () => {
                         </div>
 
                         <div v-if="activeTab === 'health'">
-                            <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Health Records') }}</h3>
-                            <div class="flex flex-col items-center justify-center text-sm font-medium text-gray-500 bg-earth-50 py-12 px-6 rounded-xl border border-dashed border-earth-300">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-bold text-gray-900">{{ __('Health Records') }}</h3>
+                            </div>
+
+                            <!-- Add Health Record Form -->
+                            <form @submit.prevent="submitHealth" class="mb-8 p-4 bg-earth-50 rounded-xl border border-earth-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Treatment Type') }}</label>
+                                    <select v-model="healthForm.type" class="w-full border-gray-300 rounded-lg text-sm">
+                                        <option value="vaccine">{{ __('Vaccine') }}</option>
+                                        <option value="medication">{{ __('Medication') }}</option>
+                                        <option value="treatment">{{ __('Treatment') }}</option>
+                                        <option value="checkup">{{ __('Checkup') }}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Product/Treatment Name') }}</label>
+                                    <input v-model="healthForm.name" type="text" required class="w-full border-gray-300 rounded-lg text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Date') }}</label>
+                                    <input v-model="healthForm.date" type="date" required class="w-full border-gray-300 rounded-lg text-sm" />
+                                </div>
+                                <button type="submit" :disabled="healthForm.processing" class="h-[38px] bg-farm-600 text-white rounded-lg text-xs font-bold hover:bg-farm-700 transition">
+                                    {{ __('Add Record') }}
+                                </button>
+                                <div class="md:col-span-4">
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">{{ __('Notes') }}</label>
+                                    <textarea v-model="healthForm.notes" rows="1" class="w-full border-gray-300 rounded-lg text-sm" :placeholder="__('Additional details...')"></textarea>
+                                </div>
+                            </form>
+
+                            <div v-if="animal.health_records && animal.health_records.length > 0" class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-earth-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Date') }}</th>
+                                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Treatment Type') }}</th>
+                                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Product/Treatment Name') }}</th>
+                                            <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">{{ __('Notes') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-earth-100">
+                                        <tr v-for="record in animal.health_records" :key="record.id">
+                                            <td class="px-4 py-3 text-sm text-gray-900">{{ new Date(record.date).toLocaleDateString('id-ID') }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-900 capitalize">
+                                                <span class="px-2 py-1 rounded-lg text-[10px] font-bold"
+                                                    :class="{
+                                                        'bg-blue-100 text-blue-700': record.type === 'vaccine',
+                                                        'bg-purple-100 text-purple-700': record.type === 'medication',
+                                                        'bg-amber-100 text-amber-700': record.type === 'treatment',
+                                                        'bg-emerald-100 text-emerald-700': record.type === 'checkup'
+                                                    }">
+                                                    {{ record.type }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm font-bold text-gray-900">{{ record.name }}</td>
+                                            <td class="px-4 py-3 text-xs text-gray-500">{{ record.notes }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div v-else class="flex flex-col items-center justify-center text-sm font-medium text-gray-500 bg-earth-50 py-12 px-6 rounded-xl border border-dashed border-earth-300">
                                 <i class="fas fa-file-medical text-3xl text-earth-300 mb-3"></i>
                                 {{ __('No health records found for this animal.') }}
                             </div>
