@@ -18,7 +18,7 @@ const tabs = ref([
 
 onMounted(() => {
     if (props.animal.purpose === 'breeding') {
-        tabs.value.push({ id: 'pedigree', name: __('Pedigree (Silsilah)') });
+        tabs.value.push({ id: 'pedigree', name: __('Pedigree') });
     } else if (props.animal.purpose === 'fattening') {
         tabs.value.push({ id: 'fattening', name: __('Fattening (ADG)') });
     } else if (props.animal.purpose === 'milking') {
@@ -232,21 +232,21 @@ const submitHealth = () => {
                         </div>
 
                         <div v-if="activeTab === 'pedigree'">
-                            <h3 class="text-lg font-bold text-gray-900 mb-6">{{ __('Animal Pedigree (Silsilah)') }}</h3>
+                            <h3 class="text-lg font-bold text-gray-900 mb-6">{{ __('Animal Pedigree') }}</h3>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div class="space-y-4">
                                     <h4 class="text-sm font-bold text-gray-500 uppercase tracking-widest">{{ __('Parents') }}</h4>
                                     <div class="p-4 bg-earth-50 rounded-2xl border border-earth-200">
                                         <div class="flex items-center justify-between mb-4 pb-2 border-b border-earth-100">
-                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Sire (Bapak)') }}</span>
+                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Sire') }}</span>
                                             <Link v-if="animal.sire" :href="route('animals.show', animal.sire.id)" class="text-sm font-bold text-emerald-700 hover:underline">
                                                 {{ animal.sire.name_or_tag }}
                                             </Link>
                                             <span v-else class="text-sm text-gray-400 italic">{{ __('Not Recorded') }}</span>
                                         </div>
                                         <div class="flex items-center justify-between">
-                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Dam (Induk)') }}</span>
+                                            <span class="text-xs font-bold text-gray-500 uppercase">{{ __('Dam') }}</span>
                                             <Link v-if="animal.dam" :href="route('animals.show', animal.dam.id)" class="text-sm font-bold text-emerald-700 hover:underline">
                                                 {{ animal.dam.name_or_tag }}
                                             </Link>
