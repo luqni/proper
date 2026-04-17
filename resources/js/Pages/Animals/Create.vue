@@ -17,6 +17,7 @@ const props = defineProps({
 const form = useForm({
     registration_number: '',
     name_or_tag: '',
+    category: 'Ruminansia',
     species: 'Sapi',
     breed: '',
     sex: 'male',
@@ -32,11 +33,22 @@ const form = useForm({
     condition_notes: '',
 });
 
+const speciesOptions = {
+    'Ruminansia': ['Sapi', 'Kambing', 'Domba', 'Kerbau'],
+    'Unggas': ['Ayam', 'Bebek', 'Burung', 'Lainnya'],
+    'Perikanan': ['Ikan', 'Udang', 'Lainnya'],
+    'Lainnya': ['Lainnya']
+};
+
+watch(() => form.category, (newCategory) => {
+    form.species = speciesOptions[newCategory][0];
+});
+
 const inbreedingRisk = ref(null);
 
 const checkInbreeding = async () => {
     if (!form.sire_id || !form.dam_id) {
-        inbreedingRisk.ref = null;
+        inbreedingRisk.value = null;
         return;
     }
     
@@ -101,16 +113,22 @@ const submit = () => {
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <InputLabel for="species" :value="__('Species')" />
+                                    <InputLabel for="category" :value="__('Spesies')" />
+                                    <select id="category" v-model="form.category" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
+                                        <option v-for="cat in Object.keys(speciesOptions)" :key="cat" :value="cat">{{ cat }}</option>
+                                    </select>
+                                    <InputError class="mt-2" :message="form.errors.category" />
+                                </div>
+                                <div>
+                                    <InputLabel for="species" :value="__('Jenis Hewan')" />
                                     <select id="species" v-model="form.species" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">
-                                        <option value="Cattle / Cow">{{ __('Cattle / Cow') }}</option>
-                                        <option value="Goat">{{ __('Goat') }}</option>
-                                        <option value="Sheep">{{ __('Sheep') }}</option>
-                                        <option value="Buffalo">{{ __('Buffalo') }}</option>
-                                        <option value="Other">{{ __('Other') }}</option>
+                                        <option v-for="opt in speciesOptions[form.category]" :key="opt" :value="opt">{{ opt }}</option>
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.species" />
                                 </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <InputLabel for="sex" :value="__('Sex')" />
                                     <select id="sex" v-model="form.sex" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-farm-500 focus:ring-farm-500">

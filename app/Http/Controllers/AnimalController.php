@@ -16,12 +16,12 @@ class AnimalController extends Controller
             ->latest()
             ->get();
 
-        $grouped = $animals->groupBy('species');
-        $speciesList = $animals->pluck('species')->unique()->values();
+        $grouped = $animals->groupBy('category');
+        $categoryList = $animals->pluck('category')->unique()->values();
 
         return Inertia::render('Animals/Index', [
             'groupedAnimals' => $grouped,
-            'speciesList' => $speciesList,
+            'categoryList' => $categoryList,
             'totalCount' => $animals->count()
         ]);
     }
@@ -41,6 +41,7 @@ class AnimalController extends Controller
         $validated = $request->validate([
             'registration_number' => 'nullable|string|max:255',
             'name_or_tag' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'species' => 'required|string|max:255',
             'breed' => 'nullable|string|max:255',
             'purpose' => 'required|in:breeding,fattening,milking,other',
@@ -106,6 +107,7 @@ class AnimalController extends Controller
         $validated = $request->validate([
             'registration_number' => 'nullable|string|max:255',
             'name_or_tag' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
             'species' => 'required|string|max:255',
             'breed' => 'nullable|string|max:255',
             'purpose' => 'required|in:breeding,fattening,milking,other',

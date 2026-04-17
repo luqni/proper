@@ -6,31 +6,32 @@ import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 
 const props = defineProps({
     groupedAnimals: Object,
-    speciesList: Array,
+    categoryList: Array,
     totalCount: Number
 });
 
 const searchQuery = ref('');
-const selectedSpecies = ref('');
+const selectedCategory = ref('');
 
 const filteredGrouped = computed(() => {
     let result = {};
     
-    // Filter by species if selected
-    const speciesToIterate = selectedSpecies.value 
-        ? [selectedSpecies.value] 
+    // Filter by category if selected
+    const categoriesToIterate = selectedCategory.value 
+        ? [selectedCategory.value] 
         : Object.keys(props.groupedAnimals);
 
-    speciesToIterate.forEach(species => {
-        const animals = props.groupedAnimals[species] || [];
+    categoriesToIterate.forEach(category => {
+        const animals = props.groupedAnimals[category] || [];
         const filtered = animals.filter(animal => {
             const matchesSearch = animal.name_or_tag.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                                (animal.species && animal.species.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
                                 (animal.breed && animal.breed.toLowerCase().includes(searchQuery.value.toLowerCase()));
             return matchesSearch;
         });
         
         if (filtered.length > 0) {
-            result[species] = filtered;
+            result[category] = filtered;
         }
     });
     
@@ -75,9 +76,9 @@ const getSpeciesIcon = (species) => {
                 <div class="bg-white rounded-3xl shadow-xl p-2 flex items-center border border-gray-100">
                     <div class="flex-1 flex items-center px-4 py-2">
                         <i class="fas fa-filter text-gray-400 mr-3"></i>
-                        <select v-model="selectedSpecies" class="text-gray-800 font-bold border-none focus:ring-0 bg-transparent py-1 w-full cursor-pointer">
-                            <option value="">{{ __('All Species') }}</option>
-                            <option v-for="s in speciesList" :key="s" :value="s">{{ s }}</option>
+                        <select v-model="selectedCategory" class="text-gray-800 font-bold border-none focus:ring-0 bg-transparent py-1 w-full cursor-pointer">
+                            <option value="">{{ __('Semua Spesies') }}</option>
+                            <option v-for="c in categoryList" :key="c" :value="c">{{ c }}</option>
                         </select>
                     </div>
                     <div class="w-px h-8 bg-gray-100"></div>
@@ -90,11 +91,11 @@ const getSpeciesIcon = (species) => {
 
             <!-- Animal Groups -->
             <div class="px-6 py-8 space-y-10 max-w-4xl mx-auto">
-                <div v-for="(animals, species) in filteredGrouped" :key="species" class="space-y-4">
+                <div v-for="(animals, category) in filteredGrouped" :key="category" class="space-y-4">
                     <div class="flex justify-between items-end px-2">
                         <h2 class="text-xl font-extrabold text-gray-700 flex items-center">
-                            <span class="mr-2 text-xl text-emerald-600"><i :class="getSpeciesIcon(species)"></i></span>
-                            {{ species }}
+                            <span class="mr-2 text-xl text-emerald-600"><i :class="getSpeciesIcon(category)"></i></span>
+                            {{ category }}
                         </h2>
                         <span class="text-sm font-bold text-gray-400">{{ animals.length }} {{ __('animals') }}</span>
                     </div>
@@ -118,7 +119,7 @@ const getSpeciesIcon = (species) => {
                                 </div>
                                 <div class="space-y-0.5 mt-1">
                                     <p class="text-xs font-bold text-gray-400 uppercase tracking-tight">
-                                        {{ species }}<span v-if="animal.breed">: {{ animal.breed }}</span>
+                                        {{ animal.species }}<span v-if="animal.breed">: {{ animal.breed }}</span>
                                     </p>
                                     <p class="text-xs font-bold text-gray-600">{{ __('Age') }}: {{ animal.age_display }}</p>
                                     <div class="flex items-center pt-1">

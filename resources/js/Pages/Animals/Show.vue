@@ -115,7 +115,11 @@ const submitHealth = () => {
                         </div>
                         <div class="grid grid-cols-2 gap-y-5 gap-x-4">
                             <div>
-                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Species') }}</p>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Spesies') }}</p>
+                                <p class="text-sm font-semibold text-gray-900 mt-1">{{ animal.category }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">{{ __('Jenis Hewan') }}</p>
                                 <p class="text-sm font-semibold text-gray-900 mt-1">{{ animal.species }}</p>
                             </div>
                             <div>
