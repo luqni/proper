@@ -27,7 +27,7 @@ defineProps({
                 </Link>
 
                 <template v-else>
-                    <Link :href="route('login')" class="text-emerald-900 text-sm font-bold hover:text-emerald-700 transition hidden sm:block">
+                    <Link :href="route('login')" class="text-emerald-900 text-sm font-bold hover:text-emerald-700 transition">
                         {{ __('Masuk') }}
                     </Link>
 
