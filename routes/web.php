@@ -17,6 +17,7 @@ use App\Http\Controllers\FeedController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -58,6 +59,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('animals/{animal}/weights', [AnimalController::class, 'storeWeight'])->name('animals.weights.store');
     Route::post('animals/{animal}/productions', [AnimalController::class, 'storeProduction'])->name('animals.productions.store');
     Route::get('animals/check-inbreeding', [AnimalController::class, 'checkInbreeding'])->name('animals.check-inbreeding');
+});
+
+Route::get('/test-email', function () {
+    $details = ['title' => 'Tes Email Brevo', 'body' => 'Koneksi berhasil!'];
+    
+    Mail::raw('Halo, ini adalah pesan tes dari Laravel via Brevo SMTP.', function ($message) {
+        $message->to('email_pribadi_kamu@gmail.com')
+                ->subject('Tes Koneksi SMTP Brevo');
+    });
+
+    return "Email terkirim! Cek inbox (atau spam) kamu.";
 });
 
 require __DIR__.'/auth.php';
